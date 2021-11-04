@@ -1,4 +1,26 @@
-### Hi there 👋
+### Hi there, Im Alexandro 👋
+
+Cultivator of good habits and relationships.
+Seeking to be more independent and gain experience.
+
+Developer, math lover, financial market enthusiast, stock investor and active Hackathoner. Studying ML, Data Science and Blockchain.
+
+2 medals in Math Olympics(OBMEP).
+German, 20 years old, living alone in Florianópolis, SC.
+Coursing Computer Science at UFSC.
+
+Toolbox:
+- Python(Django, Pandas, Scikit-learn)
+- Solidity
+- React.JS
+- React Native
+- Flutter
+- Node(Express)
+- Docker
+- Git
+- PostgreSQL
+- AWS
+
 
 ##
 [![Linkedin Badge](https://img.shields.io/badge/-Alexandro%20T.%20Netto-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/alextnetto/)](https://www.linkedin.com/in/alextnetto/)
