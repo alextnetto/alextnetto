@@ -1,12 +1,12 @@
 ### Hi there, Im Alexandro 👋
 
 Cultivator of good habits and relationships.
-Seeking to be more independent and gain experience.
+Seeking new challenges and grow as person.
 
 Developer, math lover, financial market enthusiast, stock investor and active Hackathoner. Studying ML, Data Science and Blockchain.
 
 2 medals in Math Olympics(OBMEP).
-German, 20 years old, living alone in Florianópolis, SC.
+German, 20 years old, living alone in Florianópolis, SC, Brazil.
 Coursing Computer Science at UFSC.
 
 Toolbox:
