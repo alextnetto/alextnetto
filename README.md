@@ -1,6 +1,7 @@
 ### Hi there, Im Alexandro 👋
 
 Cultivator of good habits and relationships.
+
 Seeking new challenges and grow as person.
 
 Developer, math lover, financial market enthusiast, stock investor and active Hackathoner. Studying ML, Data Science and Blockchain.
@@ -23,6 +24,8 @@ Toolbox:
 
 
 ##
+Feel free to connect with me!
+
 [![Linkedin Badge](https://img.shields.io/badge/-Alexandro%20T.%20Netto-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/alextnetto/)](https://www.linkedin.com/in/alextnetto/)
 
 
