@@ -19,7 +19,7 @@ const Home: NextPage = () => {
       <main className={styles.main}>
         <h1 className={styles.title}>
           <code className={styles.code}>
-            Hello world, I'm <a>Alex</a>
+            Hello world, I&apos;m <a>Alex</a>
           </code>
         </h1>
 
