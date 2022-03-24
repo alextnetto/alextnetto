@@ -1,11 +1,14 @@
 .container {
-  padding: 0 2rem;
+  min-width: 100vw;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .main {
-  min-height: 100vh;
   padding: 4rem 0;
   flex: 1;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -19,13 +22,11 @@
   border-top: 1px solid #eaeaea;
   justify-content: center;
   align-items: center;
+  max-height: 6rem;
 }
 
 .footer a {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-grow: 1;
+  margin-bottom: 0rem;
 }
 
 .title a {
@@ -60,7 +61,6 @@
   background: #fafafa;
   border-radius: 5px;
   padding: 0.75rem;
-  font-size: 1.1rem;
   font-family: Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono,
     Bitstream Vera Sans Mono, Courier New, monospace;
 }
@@ -70,7 +70,7 @@
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  max-width: 800px;
+  margin-top: 5rem;
 }
 
 .card {
@@ -97,6 +97,12 @@
   font-size: 1.5rem;
 }
 
+.card h2:hover,
+.card h2:focus,
+.card h2:active {
+  text-decoration: underline;
+}
+
 .card p {
   margin: 0;
   font-size: 1.25rem;
@@ -105,7 +111,13 @@
 
 .logo {
   height: 1em;
-  margin-left: 0.5rem;
+  margin: 0 2rem;
+}
+
+.logo:hover,
+.logo:focus {
+  filter: invert(28%) sepia(72%) saturate(5937%) hue-rotate(204deg)
+    brightness(103%) contrast(101%);
 }
 
 @media (max-width: 600px) {
