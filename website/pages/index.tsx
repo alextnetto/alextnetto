@@ -31,6 +31,15 @@ const Home: NextPage = () => {
               <p>Experience, work, acomplishments and life</p>
             </a>
           </Link>
+          <Link href="/obvius-crypto">
+            <a className={styles.card}>
+              <h2>Obvius Crypto &rarr;</h2>
+              <p>
+                The winning solution of Ethereum Rio Hackathon, that I
+                participated coding Smart Contracts
+              </p>
+            </a>
+          </Link>
         </div>
       </main>
 
