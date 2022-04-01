@@ -6,6 +6,7 @@ import styles from "../styles/Home.module.css";
 
 const Home: NextPage = () => {
   const logoSize = 40;
+  const ytLogoSize = 23;
   return (
     <div className={styles.container}>
       <Head>
@@ -25,10 +26,16 @@ const Home: NextPage = () => {
         </h1>
 
         <div className={styles.grid}>
+          <Link href="https://www.youtube.com/channel/UCvnZB9Tim1kidK7Fhy33AWg">
+            <a className={styles.card}>
+              <h2>YouTube &rarr;</h2>
+              <p>Blockchain, Solidity, Smart Contracts</p>
+            </a>
+          </Link>
           <Link href="/cv">
             <a className={styles.card}>
               <h2>About me &rarr;</h2>
-              <p>Experience, work, acomplishments and life</p>
+              <p>Experience, work, accomplishments and life</p>
             </a>
           </Link>
           <Link href="/obvius-crypto">
