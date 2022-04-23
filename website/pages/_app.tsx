@@ -17,7 +17,14 @@ function MyApp({ Component, pageProps }: AppProps) {
           ReactPixel.pageView();
         });
       });
+
+    import("react-gtm-module")
+      .then((x) => x.default)
+      .then((TagManager) => {
+        TagManager.initialize({ gtmId: "GTM-PJQNVVP" });
+      });
   }, [router.events]);
+
   return <Component {...pageProps} />;
 }
 
