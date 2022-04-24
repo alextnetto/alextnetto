@@ -25,6 +25,16 @@ const Home: NextPage = () => {
           </code>
         </h1>
 
+        <iframe
+          width="560"
+          height="315"
+          src="https://www.youtube.com/embed/k3q7r7_iIyM"
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+
         <div className={styles.grid}>
           <Link href="https://www.youtube.com/channel/UCvnZB9Tim1kidK7Fhy33AWg">
             <a className={styles.card}>
