@@ -3,7 +3,6 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import styles from "../styles/Home.module.css";
-import { BrowserView, MobileView } from "react-device-detect";
 
 const Home: NextPage = () => {
   const logoSize = 40;
@@ -26,19 +25,7 @@ const Home: NextPage = () => {
           </code>
         </h1>
 
-        <MobileView>
-          <iframe
-            width="336"
-            height="189"
-            src="https://www.youtube.com/embed/k3q7r7_iIyM"
-            title="YouTube video player"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        </MobileView>
-
-        <BrowserView>
+        <div className={styles.videoContainer}>
           <iframe
             width="560"
             height="315"
@@ -48,7 +35,7 @@ const Home: NextPage = () => {
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
           ></iframe>
-        </BrowserView>
+        </div>
 
         <div className={styles.grid}>
           <Link href="https://www.youtube.com/channel/UCvnZB9Tim1kidK7Fhy33AWg">
