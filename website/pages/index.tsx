@@ -46,13 +46,13 @@ const Home: NextPage = () => {
           </Link>
           <Link href="https://twitter.com/alextnetto">
             <a className={styles.card}>
-              <h2>Me siga no Twitter</h2>
+              <h2>Me siga no Twitter &rarr;</h2>
               <p>Uma das coisas mais importantes é consumir boas informações</p>
             </a>
           </Link>
           <Link href="https://discord.gg/vaxtW2ET2g">
             <a className={styles.card}>
-              <h2>Faça parte da comunidade</h2>
+              <h2>Faça parte da comunidade &rarr;</h2>
               <p>Se você ta mesmo interessado, então aqui é seu lugar</p>
             </a>
           </Link>
