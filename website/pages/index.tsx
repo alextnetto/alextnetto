@@ -41,21 +41,33 @@ const Home: NextPage = () => {
           <Link href="https://www.youtube.com/channel/UCvnZB9Tim1kidK7Fhy33AWg">
             <a className={styles.card}>
               <h2>YouTube &rarr;</h2>
-              <p>Blockchain, Solidity, Smart Contracts</p>
+              <p>Aqui aprofundo sobre Blockchain, Solidity, Smart Contracts</p>
+            </a>
+          </Link>
+          <Link href="https://twitter.com/alextnetto">
+            <a className={styles.card}>
+              <h2>Me siga no Twitter</h2>
+              <p>Uma das coisas mais importantes é consumir boas informações</p>
+            </a>
+          </Link>
+          <Link href="https://discord.gg/vaxtW2ET2g">
+            <a className={styles.card}>
+              <h2>Faça parte da comunidade</h2>
+              <p>Se você ta mesmo interessado, então aqui é seu lugar</p>
             </a>
           </Link>
           <Link href="/cv">
             <a className={styles.card}>
-              <h2>About me &rarr;</h2>
-              <p>Experience, work, accomplishments and life</p>
+              <h2>Sobre mim &rarr;</h2>
+              <p>Experiência, trabalho, trajetória</p>
             </a>
           </Link>
           <Link href="/obvius-crypto">
             <a className={styles.card}>
               <h2>Obvius Crypto &rarr;</h2>
               <p>
-                The winning solution of Ethereum Rio Hackathon, that I
-                participated coding Smart Contracts
+                O pitch do projeto que meu time ganhou no Hackathon do Ethereum
+                Rio
               </p>
             </a>
           </Link>
