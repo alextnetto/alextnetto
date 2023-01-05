@@ -50,10 +50,10 @@ const Home: NextPage = () => {
               <p>Uma das coisas mais importantes é consumir boas informações</p>
             </a>
           </Link>
-          <Link href="https://discord.gg/vaxtW2ET2g">
+          <Link href="https://github.com/Alextnetto/blockchain-roadmap">
             <a className={styles.card}>
-              <h2>Faça parte da comunidade &rarr;</h2>
-              <p>Se você ta mesmo interessado, então aqui é seu lugar</p>
+              <h2>Aprenda sobre Blockchain &rarr;</h2>
+              <p>Se você ta mesmo interessado, aqui tem um roadmap para aprender</p>
             </a>
           </Link>
           <Link href="/cv">
