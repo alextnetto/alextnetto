@@ -3,24 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "run": "tsx watch src/index.ts",
+    "build": "tsx src/index.ts",
+    "serve": "serve dist"
   },
   "dependencies": {
-    "next": "12.1.0",
-    "react": "17.0.2",
-    "react-dom": "17.0.2",
-    "react-facebook-pixel": "^1.0.4",
-    "react-gtm-module": "^2.0.11"
+    "markdown-it": "^14.1.0",
+    "serve": "^14.2.3"
   },
   "devDependencies": {
-    "@types/node": "17.0.22",
-    "@types/react": "17.0.42",
-    "@types/react-gtm-module": "^2.0.1",
-    "eslint": "8.11.0",
-    "eslint-config-next": "12.1.0",
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^22.5.4",
+    "tsx": "^4.19.0",
     "typescript": "4.6.2"
   }
 }
