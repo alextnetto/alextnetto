@@ -46,6 +46,21 @@ md.renderer.rules.abbr_open = (tokens, idx) => {
   return `<abbr class="custom-abbr" data-title="${content}">`;
 };
 
+// Add this custom renderer for links
+md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
+  const token = tokens[idx];
+  const hrefIndex = token.attrIndex("href");
+  if (hrefIndex >= 0) {
+    const href = token.attrs[hrefIndex][1];
+    const isExternal = /^https?:\/\//.test(href);
+    if (isExternal) {
+      token.attrPush(["target", "_blank"]);
+      token.attrPush(["rel", "noopener noreferrer"]);
+    }
+  }
+  return self.renderToken(tokens, idx, options);
+};
+
 async function generateBlog() {
   const postsDir = path.join(process.cwd(), "src", "posts");
   const outputDir = path.join(process.cwd(), "dist");
