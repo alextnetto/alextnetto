@@ -226,9 +226,7 @@ sub {
     padding-left: 1em;
 }
 
-#toc-sidebar li {
-    margin-bottom: 0.5em;
-}
+
 
 #toc-sidebar a {
     text-decoration: none;

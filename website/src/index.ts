@@ -33,6 +33,7 @@ md.use(MarkdownItTocDoneRight, {
   containerClass: "toc",
   containerId: "table-of-contents",
   level: [1, 2, 3],
+  listType: "ul",
   callback: function (html) {
     tocHtml = html;
   },
