@@ -162,6 +162,16 @@ img {
     filter: grayscale(100%) brightness(80%) contrast(120%);
 }
 
+sup {
+    vertical-align: super;
+    font-size: smaller;
+}
+
+sub {
+    vertical-align: sub;
+    font-size: smaller;
+}
+
 #toc-sidebar {
     width: var(--toc-width);
     position: fixed;

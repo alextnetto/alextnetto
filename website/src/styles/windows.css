@@ -135,6 +135,16 @@ img {
     border: 1px solid var(--border-color);
 }
 
+sup {
+    vertical-align: super;
+    font-size: smaller;
+}
+
+sub {
+    vertical-align: sub;
+    font-size: smaller;
+}
+
 #toc-sidebar {
     width: var(--toc-width);
     position: fixed;

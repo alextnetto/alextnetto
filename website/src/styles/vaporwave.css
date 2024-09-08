@@ -169,6 +169,16 @@ img {
     box-shadow: 0 0 10px var(--highlight-color);
 }
 
+sup {
+    vertical-align: super;
+    font-size: smaller;
+}
+
+sub {
+    vertical-align: sub;
+    font-size: smaller;
+}
+
 #toc-sidebar {
     width: var(--toc-width);
     position: fixed;

@@ -8,6 +8,9 @@ import MarkdownItFootnote from "markdown-it-footnote";
 import MarkdownItTaskLists from "markdown-it-task-lists";
 import MarkdownItImsize from "markdown-it-imsize";
 import MarkdownItAbbr from "markdown-it-abbr";
+import MarkdownItSup from "markdown-it-sup";
+import MarkdownItSub from "markdown-it-sub";
+import MarkdownItKatex from "markdown-it-katex";
 
 const md = new MarkdownIt({
   html: true,
@@ -34,11 +37,18 @@ md.use(MarkdownItTocDoneRight, {
   },
 });
 
+md.use(MarkdownItKatex, {
+  throwOnError: false,
+  errorColor: "#cc0000",
+});
+
 md.use(MarkdownItEmoji);
 md.use(MarkdownItFootnote);
 md.use(MarkdownItTaskLists, { label: true, labelAfter: true });
 md.use(MarkdownItImsize);
 md.use(MarkdownItAbbr);
+md.use(MarkdownItSub);
+md.use(MarkdownItSup);
 
 // Custom renderer for abbreviation opening tag
 md.renderer.rules.abbr_open = (tokens, idx) => {
