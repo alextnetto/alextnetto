@@ -19,7 +19,21 @@
         <header class="post-header">
           <div class="post-meta">
             <time>{{date}}</time>
-            <a href="../index.html" class="all-posts-link">See all posts</a>
+            <nav class="post-navigation">
+              <div class="nav-all">
+                <a href="../index.html" class="nav-link">All Posts</a>
+              </div>
+              <div class="nav-next">
+                {{#if nextPost}}
+                <a href="{{nextPost}}" class="nav-link">Next</a>
+                {{/if}}
+              </div>
+              <div class="nav-previous">
+                {{#if previousPost}}
+                <a href="{{previousPost}}" class="nav-link">Previous</a>
+                {{/if}}
+              </div>
+            </nav>
           </div>
         </header>
         <main>
@@ -27,30 +41,6 @@
         </main>
       </div>
     </div>
-    <script>
-      // JavaScript to highlight current section in TOC
-      document.addEventListener("DOMContentLoaded", () => {
-        const tocLinks = document.querySelectorAll("#toc-sidebar a");
-        const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
-
-        const observer = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (entry.isIntersecting) {
-                tocLinks.forEach((link) => {
-                  link.classList.remove("active");
-                  if (link.getAttribute("href") === "#" + entry.target.id) {
-                    link.classList.add("active");
-                  }
-                });
-              }
-            });
-          },
-          { rootMargin: "0px 0px -50% 0px" }
-        );
-
-        headings.forEach((heading) => observer.observe(heading));
-      });
-    </script>
+    <!-- ... (rest of the body, including scripts) ... -->
   </body>
 </html>

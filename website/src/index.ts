@@ -122,11 +122,24 @@ async function generateBlog() {
     path.join(process.cwd(), "src", "templates", "post.html"),
     "utf-8"
   );
-  for (const post of posts) {
+  for (let i = 0; i < posts.length; i++) {
+    const post = posts[i];
+    const nextPost = i > 0 ? posts[i - 1].filename : "";
+    const previousPost = i < posts.length - 1 ? posts[i + 1].filename : "";
+
     const postHtml = postTemplate
-      .replace("{{date}}", post.parsedDate) // Add date to the post template
+      .replace("{{title}}", post.title)
+      .replace("{{date}}", post.parsedDate)
       .replace("{{content}}", post.html)
-      .replace("<!-- The TOC will be inserted here -->", post.toc);
+      .replace("<!-- The TOC will be inserted here -->", post.toc)
+      .replace("{{previousPost}}", previousPost)
+      .replace("{{nextPost}}", nextPost)
+      .replace(
+        /{{#if previousPost}}([\s\S]*?){{\/if}}/g,
+        previousPost ? "$1" : ""
+      )
+      .replace(/{{#if nextPost}}([\s\S]*?){{\/if}}/g, nextPost ? "$1" : "");
+
     await fs.writeFile(path.join(postsOutputDir, post.filename), postHtml);
   }
 

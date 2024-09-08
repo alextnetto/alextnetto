@@ -177,18 +177,34 @@ sub {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.9em;
-    color: var(--text-color);
-}
-
-.all-posts-link {
-    color: var(--link-color);
+    margin-bottom: 1em;
+  }
+  
+  .post-navigation {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 200px; /* Adjust this value as needed */
+  }
+  
+  .nav-previous,
+  .nav-all,
+  .nav-next {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .nav-link {
+    color: #4183c4;
     text-decoration: none;
-}
-
-.all-posts-link:hover {
-    text-decoration: underline; 
-}
+    font-size: 0.9em;
+    white-space: nowrap;
+  }
+  
+  .nav-link:hover {
+    text-decoration: underline;
+  }
+  
 
 .post-list {
     list-style-type: none;
