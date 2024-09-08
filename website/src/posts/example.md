@@ -1,3 +1,6 @@
+---
+date: 2024-09-07
+---
 # My Amazing Blog Post
 
 

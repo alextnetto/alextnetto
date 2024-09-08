@@ -173,6 +173,23 @@ sub {
     font-size: smaller;
 }
 
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9em;
+    color: var(--text-color);
+}
+
+.all-posts-link {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.all-posts-link:hover {
+    text-decoration: underline; 
+}
+
 #toc-sidebar {
     width: var(--toc-width);
     position: fixed;
@@ -222,13 +239,20 @@ sub {
 }
 
 .footnotes-sep {
-    margin-top: 24px;
+    margin-top: 2em;
     border-top: 1px solid var(--border-color);
 }
 
 .footnotes {
-    padding-top: 1em;
     font-size: 0.9em;
+}
+
+.footnotes li {
+    margin-bottom: 0em;  /* Reduced from the default */
+}
+
+.footnotes p {
+    margin: 0;  /* Remove default paragraph margins within footnotes */
 }
 
 .footnotes ol {

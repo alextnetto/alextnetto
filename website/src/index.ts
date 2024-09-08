@@ -11,6 +11,7 @@ import MarkdownItAbbr from "markdown-it-abbr";
 import MarkdownItSup from "markdown-it-sup";
 import MarkdownItSub from "markdown-it-sub";
 import MarkdownItKatex from "markdown-it-katex";
+import { extractMetadata } from "./utils";
 
 const md = new MarkdownIt({
   html: true,
@@ -95,18 +96,25 @@ async function generateBlog() {
     files
       .filter((file) => file.endsWith(".md"))
       .map(async (file) => {
-        const content = await fs.readFile(path.join(postsDir, file), "utf-8");
+        const rawFile = await fs.readFile(path.join(postsDir, file), "utf-8");
+        const parsedFile = extractMetadata(rawFile);
+        const date = new Date(parsedFile.data.date); // Convert date string to Date object
         tocHtml = ""; // Reset TOC HTML
-        const htmlContent = md.render(content);
-        const title = content.split("\n")[0].replace("#", "").trim();
+        const htmlContent = md.render(parsedFile.content);
+        const title = parsedFile.content.split("\n")[0].replace("#", "").trim();
         return {
           title,
           html: htmlContent,
           toc: tocHtml,
           filename: file.replace(".md", ".html"),
+          date: date, // Add date to the post object
+          parsedDate: date.toISOString().split("T")[0],
         };
       })
   );
+
+  // Sort posts by date, from most recent to oldest
+  posts.sort((a, b) => b.date.getTime() - a.date.getTime());
 
   // Generate individual post pages
   const postTemplate = await fs.readFile(
@@ -115,7 +123,7 @@ async function generateBlog() {
   );
   for (const post of posts) {
     const postHtml = postTemplate
-      .replace("{{title}}", post.title)
+      .replace("{{date}}", post.parsedDate) // Add date to the post template
       .replace("{{content}}", post.html)
       .replace("<!-- The TOC will be inserted here -->", post.toc);
     await fs.writeFile(path.join(postsOutputDir, post.filename), postHtml);
@@ -123,7 +131,8 @@ async function generateBlog() {
 
   const postLinks = posts
     .map(
-      (post) => `<li><a href="posts/${post.filename}">${post.title}</a></li>`
+      (post) =>
+        `<li><small>${post.parsedDate}</small> <a href="posts/${post.filename}">${post.title}</a> </li>`
     )
     .join("\n");
 
@@ -133,7 +142,8 @@ async function generateBlog() {
     '<h2 id="blog-posts">Blog Posts</h2>\n<ul>\n' +
     posts
       .map(
-        (post) => `<li><a href="posts/${post.filename}">${post.title}</a></li>`
+        (post) =>
+          `<li><a href="posts/${post.filename}">${post.title}</a> <small>${post.parsedDate}</small></li>`
       )
       .join("\n") +
     "\n</ul>";

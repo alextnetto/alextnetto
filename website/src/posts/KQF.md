@@ -1,3 +1,6 @@
+---
+date: 2024-09-09
+---
 # KQF: An alternative approach to resource allocation
 Special thanks to Avsa, Danimim and Kevin Owocki for the feedback and discussions
 
@@ -6,7 +9,7 @@ This post introduces Knapsack Quadratic Funding (KQF). KQF aims to complement QF
 
 ![kqf](https://hackmd.io/_uploads/HJnJ2UXnA.jpg =30%x)
 
-## Current Challenges in Funding New Projects
+## Current challenges in funding new projects
 
 After participating in Zuzalu QF rounds as a donor and grantee, some challenges became clear.
 
@@ -37,14 +40,14 @@ Here's a visual representation of the process:
 
 ![KQF Distribution Process](https://hackmd.io/_uploads/B1toguGtA.png)
 
-## Potential Advantages of KQF
+## Potential advantages of KQF
 
 1. **Incentive Alignment**: Projects receive only what they ask for minus donations, discouraging inflated requests.
 2. **Efficient Resource Use**: By fully funding projects or not at all, we ensure that funded projects have sufficient resources to execute their plans.
 3. **Fair Asking**: The all-or-nothing nature encourages projects to request only what they truly need.
 4. **Execution Commitment**: Funded projects receive their full asked amount, creating a stronger obligation to deliver on their promises.
 
-## Possible Refinements
+## Possible refinements
 
 To further optimize the KQF mechanism, consider:
 
