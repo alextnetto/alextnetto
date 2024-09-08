@@ -1,14 +1,15 @@
 :root {
-    --background-color: #021526;
-    --text-color: #abb2bf;
-    --link-color: #61afef;
-    --border-color: #3b4048;
-    --code-background: #282c34;
+    --background-color: #1e1e1e;
+    --sidebar-background: #252526;
+    --text-color: #d4d4d4;
+    --link-color: #4ec9b0;
+    --border-color: #3f3f3f;
+    --code-background: #1e1e1e;
     --toc-width: 240px;
     --content-max-width: 860px;
-    --header-color: #abb2bf;
-    --highlight-color: #98c379;
-    --blockquote-color: #5c6370;
+    --header-color: #ffffff;
+    --highlight-color: #569cd6;
+    --status-bar-background: #007acc;
 }
 
 body {
@@ -22,35 +23,42 @@ body {
 
 .container {
     display: flex;
-    min-height: 100vh;
+    height: 100vh;
 }
 
 .top-nav {
-    margin-bottom: 2rem;
+    background-color: var(--status-bar-background);
+    color: white;
+    padding: 5px 10px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
 }
 
 .back-link {
-    color: var(--link-color);
+    color: white;
     text-decoration: none;
     font-size: 0.9em;
 }
 
 .content-wrapper {
     flex: 1;
-    max-width: calc(100% - var(--toc-width));
-    margin-left: var(--toc-width);
+    max-width: calc(80% - var(--toc-width));
+    margin-left: calc(10% + var(--toc-width));
     padding: 20px;
+    overflow-y: auto;
+    height: calc(100vh - var(--status-bar-height));
     box-sizing: border-box;
 }
 
 main {
     position: relative;
-    max-width: var(--content-max-width);
-    margin: 0 auto;
 }
 
 article {
-    font-size: 16px;
+    font-size: 14px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -64,14 +72,14 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 {
     font-size: 2em;
-    padding-bottom: 0.3em;
     border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.3em;
 }
 
 h2 {
     font-size: 1.5em;
-    padding-bottom: 0.3em;
     border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.3em;
 }
 
 h3 {
@@ -94,7 +102,7 @@ a:hover {
     font-size: 0.8em;
     position: absolute;
     left: -1.3em;
-    top: 50%;
+    top: 45%;
     transform: translateY(-50%);
     transition: opacity 0.2s ease-in-out;
 }
@@ -113,12 +121,12 @@ h6:hover .header-link {
 }
 
 code {
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-family: Consolas, 'Courier New', monospace;
     background-color: var(--code-background);
     padding: 0.2em 0.4em;
     border-radius: 3px;
     font-size: 85%;
-    color: #e06c75;
+    color: #ce9178;
 }
 
 pre {
@@ -133,13 +141,12 @@ pre {
 pre code {
     background-color: transparent;
     padding: 0;
-    color: var(--text-color);
 }
 
 blockquote {
     margin: 0;
     padding: 0 1em;
-    color: var(--blockquote-color);
+    color: #858585;
     border-left: 0.25em solid var(--border-color);
 }
 
@@ -155,7 +162,7 @@ table th, table td {
 }
 
 table tr:nth-child(2n) {
-    background-color: #2c313a;
+    background-color: #2a2a2a;
 }
 
 img {
@@ -168,14 +175,13 @@ img {
     position: fixed;
     left: 0;
     top: 0;
-    bottom: 0;
+    bottom: 25px;  /* Adjust for status bar */
     overflow-y: auto;
     padding: 20px;
-    background-color: #21252b;
+    background-color: var(--sidebar-background);
     border-right: 1px solid var(--border-color);
-    font-size: 14px;
+    font-size: 13px;
     line-height: 1.5;
-    box-sizing: border-box;
 }
 
 #toc-sidebar ul {
@@ -189,7 +195,7 @@ img {
 }
 
 #toc-sidebar li {
-    margin-bottom: 0.5em;
+    margin-bottom: 0.3em;
 }
 
 #toc-sidebar a {
@@ -200,7 +206,7 @@ img {
 }
 
 #toc-sidebar a:hover, #toc-sidebar a.active {
-    color: var(--link-color);
+    color: var(--highlight-color);
 }
 
 .task-list-item {
@@ -241,18 +247,18 @@ img {
     position: absolute;
     left: 0;
     bottom: 100%;
-    background: #282c34;
+    background: #252526;
     color: var(--text-color);
     padding: 4px 8px;
-    border-radius: 3px;
-    font-size: 14px;
+    border-radius: 2px;
+    font-size: 12px;
     white-space: nowrap;
     opacity: 0;
     transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
     pointer-events: none;
     z-index: 1000;
     border: 1px solid var(--border-color);
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .custom-abbr:hover::after {
@@ -267,7 +273,7 @@ img {
 
     .content-wrapper {
         margin-left: 0;
-        max-width: 100%;
+        height: auto;
     }
 
     #toc-sidebar {
@@ -276,5 +282,10 @@ img {
         border-right: none;
         border-bottom: 1px solid var(--border-color);
         margin-bottom: 20px;
+        height: auto;
+    }
+
+    .top-nav {
+        position: static;
     }
 }
