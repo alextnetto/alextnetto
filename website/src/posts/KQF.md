@@ -20,7 +20,7 @@ These scenarios suggest that there might be room for improvement in our funding 
 
 ## Introducing Knapsack Quadratic Funding (KQF)
 
-KQF draws inspiration from the [Knapsack problem](https://developers.google.com/optimization/pack/knapsack), a concept in combinatorial optimization. This approach has already seen application in the blockchain space, notably in the ENS community's recent [distribution of $3.6 million to service providers](https://discuss.ens.domains/t/temp-check-proposal-for-new-service-provider-streams/18044?u=alextnetto.eth).
+KQF draws inspiration from the Knapsack problem[^1], a concept in combinatorial optimization. This approach has already seen application in the blockchain space, notably in the ENS community's recent distribution of $3.6 million to service providers[^2].
 
 The proposed KQF mechanism works as follows:
 
@@ -69,3 +69,10 @@ While KQF shows promise, several questions remain:
 Further research and possibly some simulations or small-scale trials could help answer these questions and refine the KQF concept.
 
 Feedback and critiques from the community will be crucial in evaluating and improving this proposal. The goal is to continue evolving our funding mechanisms to better serve the needs of both project creators and donors in the ecosystem.
+
+*[QF]: Quadratic Funding
+*[KQF]: Knapsack Quadratic Funding
+*[ENS]: Ethereum Name Service
+
+[^1]: https://developers.google.com/optimization/pack/knapsack
+[^2]: https://discuss.ens.domains/t/temp-check-proposal-for-new-service-provider-streams/18044

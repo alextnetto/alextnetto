@@ -5,12 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{{title}}</title>
     <link rel="stylesheet" href="../styles/main.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Roboto+Mono&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
-    <header>
-      <h1>{{title}}</h1>
-      <a href="../index.html">Back to Home</a>
-    </header>
-    <main>{{content}}</main>
+    <div class="container">
+      <aside id="toc-sidebar">
+        <!-- The TOC will be inserted here -->
+      </aside>
+      <div class="content-wrapper">
+        <nav class="top-nav">
+          <a href="../index.html" class="back-link">← All Posts</a>
+        </nav>
+        <main>
+          <article>{{content}}</article>
+        </main>
+      </div>
+    </div>
+    <script>
+      // JavaScript to highlight current section in TOC
+      document.addEventListener("DOMContentLoaded", () => {
+        const tocLinks = document.querySelectorAll("#toc-sidebar a");
+        const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                tocLinks.forEach((link) => {
+                  link.classList.remove("active");
+                  if (link.getAttribute("href") === "#" + entry.target.id) {
+                    link.classList.add("active");
+                  }
+                });
+              }
+            });
+          },
+          { rootMargin: "0px 0px -50% 0px" }
+        );
+
+        headings.forEach((heading) => observer.observe(heading));
+      });
+    </script>
   </body>
 </html>
