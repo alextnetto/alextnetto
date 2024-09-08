@@ -190,6 +190,17 @@ sub {
     text-decoration: underline; 
 }
 
+.post-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+  
+.post-date {
+    margin-right: 1em;
+    flex-shrink: 0;
+}
+
 #toc-sidebar {
     width: var(--toc-width);
     position: fixed;

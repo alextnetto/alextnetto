@@ -131,8 +131,10 @@ async function generateBlog() {
 
   const postLinks = posts
     .map(
-      (post) =>
-        `<li><small>${post.parsedDate}</small> <a href="posts/${post.filename}">${post.title}</a> </li>`
+      (post) => `<li class="post-item">
+      <small class="post-date">${post.parsedDate}</small>
+      <a href="posts/${post.filename}" class="post-title">${post.title}</a>
+    </li>`
     )
     .join("\n");
 
@@ -156,7 +158,10 @@ async function generateBlog() {
   const indexHtml = indexTemplate
     .replace(
       "{{content}}",
-      indexHtmlContent + "\n<h2>Blog Posts</h2>\n<ul>" + postLinks + "</ul>"
+      indexHtmlContent +
+        '\n<h2>Blog Posts</h2><ul class="post-list">' +
+        postLinks +
+        "</ul>"
     )
     .replace("{{toc}}", combinedToc);
   await fs.writeFile(path.join(outputDir, "index.html"), indexHtml);
