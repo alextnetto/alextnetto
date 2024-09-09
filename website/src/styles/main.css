@@ -118,7 +118,7 @@ code {
     padding: 0.2em 0.4em;
     border-radius: 3px;
     font-size: 85%;
-    color: #e06c75;
+    color: var(--text-color);
 }
 
 pre {
@@ -291,7 +291,7 @@ sub {
 
 .custom-abbr {
     position: relative;
-    text-decoration: underline dotted var(--highlight-color);
+    text-decoration: underline dotted var(--text-color);
     cursor: help;
 }
 
