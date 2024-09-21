@@ -1,6 +1,6 @@
 # Welcome to My Blog
 
-Hi Im alex and etc
+Hi Im alex and I love Dani
 This is the main page of my blog. Here, I'll share my thoughts on various topics.
 
 ## About Me
