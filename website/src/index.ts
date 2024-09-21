@@ -76,7 +76,7 @@ md.renderer.rules.link_open = (tokens, idx, options, env, self) => {
 async function generateBlog() {
   const postsDir = path.join(process.cwd(), "src", "posts");
   const outputDir = path.join(process.cwd(), "dist");
-  const postsOutputDir = path.join(outputDir, "posts");
+  const postsOutputDir = path.join(outputDir);
   const stylesOutputDir = path.join(outputDir, "styles");
 
   // Ensure output directories exist
@@ -147,7 +147,7 @@ async function generateBlog() {
     .map(
       (post) => `<li class="post-item">
       <small class="post-date">${post.parsedDate}</small>
-      <a href="posts/${post.filename}" class="post-title">${post.title}</a>
+      <a href="/${post.filename}" class="post-title">${post.title}</a>
     </li>`
     )
     .join("\n");
@@ -159,7 +159,7 @@ async function generateBlog() {
     posts
       .map(
         (post) =>
-          `<li><a href="posts/${post.filename}">${post.title}</a> <small>${post.parsedDate}</small></li>`
+          `<li><a href="/${post.filename}">${post.title}</a> <small>${post.parsedDate}</small></li>`
       )
       .join("\n") +
     "\n</ul>";
@@ -184,6 +184,12 @@ async function generateBlog() {
   await fs.copyFile(
     path.join(process.cwd(), "src", "styles", "main.css"),
     path.join(stylesOutputDir, "main.css")
+  );
+
+  // Copy 404 error page
+  await fs.copyFile(
+    path.join(process.cwd(), "src", "templates", "404.html"),
+    path.join(postsOutputDir, "404.html")
   );
 
   console.log("Blog generated successfully!");
