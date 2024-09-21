@@ -1,3 +1,0 @@
-avatar=https://avatars.githubusercontent.com/u/56097505
-twitter=alextnetto
-github=Alextnetto

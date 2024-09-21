@@ -1,0 +1,260 @@
+:root {
+    --background-color: #1e1e1e;
+    --sidebar-background: #252526;
+    --text-color: #d4d4d4;
+    --link-color: #4ec9b0;
+    --border-color: #3f3f3f;
+    --code-background: #1e1e1e;
+    --toc-width: 240px;
+    --content-max-width: 860px;
+    --header-color: #ffffff;
+    --highlight-color: #569cd6;
+    --status-bar-background: #007acc;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    display: flex;
+    height: 100vh;
+}
+
+.content-wrapper {
+    flex: 1;
+    max-width: calc(100% - var(--toc-width));
+    margin-left: var(--toc-width);
+    padding: 20px;
+    overflow-y: auto;
+    height: calc(100vh - 22px);
+    box-sizing: border-box;
+}
+
+main {
+    position: relative;
+}
+
+article {
+    font-size: 14px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+    position: relative;
+    color: var(--header-color);
+}
+
+h1 {
+    font-size: 2em;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.3em;
+}
+
+h2 {
+    font-size: 1.5em;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.3em;
+}
+
+h3 {
+    font-size: 1.25em;
+}
+
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.header-link {
+    color: var(--highlight-color);
+    text-decoration: none;
+    opacity: 0;
+    font-size: 0.8em;
+    position: absolute;
+    left: -1.3em;
+    top: 45%;
+    transform: translateY(-50%);
+    transition: opacity 0.2s ease-in-out;
+}
+
+h1:hover .header-link,
+h2:hover .header-link,
+h3:hover .header-link,
+h4:hover .header-link,
+h5:hover .header-link,
+h6:hover .header-link {
+    opacity: 0.7;
+}
+
+.header-link:hover {
+    opacity: 1;
+}
+
+code {
+    font-family: Consolas, 'Courier New', monospace;
+    background-color: var(--code-background);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+    font-size: 85%;
+    color: #ce9178;
+}
+
+pre {
+    background-color: var(--code-background);
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    border-radius: 3px;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+blockquote {
+    margin: 0;
+    padding: 0 1em;
+    color: #858585;
+    border-left: 0.25em solid var(--border-color);
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+table th, table td {
+    padding: 6px 13px;
+    border: 1px solid var(--border-color);
+}
+
+table tr:nth-child(2n) {
+    background-color: #2a2a2a;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+#toc-sidebar {
+    width: var(--toc-width);
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 22px;
+    overflow-y: auto;
+    padding: 20px;
+    background-color: var(--sidebar-background);
+    border-right: 1px solid var(--border-color);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+#toc-sidebar ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+#toc-sidebar ul ul {
+    padding-left: 1em;
+}
+
+#toc-sidebar li {
+    margin-bottom: 0.3em;
+}
+
+#toc-sidebar a {
+    text-decoration: none;
+    color: var(--text-color);
+    display: block;
+    padding: 2px 0;
+}
+
+#toc-sidebar a:hover, #toc-sidebar a.active {
+    color: var(--highlight-color);
+}
+
+.post-header {
+    margin-bottom: 2em;
+}
+
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9em;
+    color: var(--text-color);
+}
+
+.post-navigation {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 200px;
+}
+
+.nav-link {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+.post-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.post-item {
+    margin-bottom: 1em;
+}
+
+.post-date {
+    color: var(--text-color);
+    margin-right: 1em;
+}
+
+.post-title {
+    color: var(--link-color);
+}
+
+@media (max-width: 1024px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .content-wrapper {
+        margin-left: 0;
+        height: auto;
+    }
+
+    #toc-sidebar {
+        position: static;
+        width: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 20px;
+        height: auto;
+    }
+}
