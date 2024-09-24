@@ -8,9 +8,29 @@
   </head>
   <body>
     <div class="container">
-      <aside id="toc-sidebar">{{toc}}</aside>
+      <header>
+        <nav>
+          <div class="nav-left">
+            <ul>
+              <li><a href="/">Home</a></li>
+              <li><a href="/blog">Blog</a></li>
+            </ul>
+          </div>
+          <div class="nav-right">
+            <a href="https://github.com/alextnetto" target="_blank" rel="noopener noreferrer" class="social-icon">
+              <img src="/images/github-logo.svg" alt="GitHub" width="32" height="32">
+            </a>
+            <a href="https://t.me/alextnetto" target="_blank" rel="noopener noreferrer" class="social-icon">
+              <img src="/images/telegram-logo.svg" alt="Telegram" width="32" height="32">
+            </a>
+            <a href="https://www.linkedin.com/in/alextnetto" target="_blank" rel="noopener noreferrer" class="social-icon">
+              <img src="/images/linkedin-logo.svg" alt="LinkedIn" width="32" height="32">
+            </a>
+          </div>
+        </nav>
+      </header>
       <div class="content-wrapper">
-        <main>{{content}}</main>
+        <main role="main">{{content}}</main>
       </div>
     </div>
   </body>

@@ -152,33 +152,24 @@ async function generateBlog() {
     )
     .join("\n");
 
-  // Generate combined TOC for index page
-  const combinedToc =
-    indexToc +
-    '<h2 id="blog-posts">Blog Posts</h2>\n<ul>\n' +
-    posts
-      .map(
-        (post) =>
-          `<li><a href="/${post.filename}">${post.title}</a> <small>${post.parsedDate}</small></li>`
-      )
-      .join("\n") +
-    "\n</ul>";
-
   // Generate index page
   const indexTemplate = await fs.readFile(
     path.join(process.cwd(), "src", "templates", "index.html"),
     "utf-8"
   );
-  const indexHtml = indexTemplate
-    .replace(
-      "{{content}}",
-      indexHtmlContent +
-        '\n<h2>Blog Posts</h2><ul class="post-list">' +
-        postLinks +
-        "</ul>"
-    )
-    .replace("{{toc}}", combinedToc);
+  const indexHtml = indexTemplate.replace("{{content}}", indexHtmlContent);
   await fs.writeFile(path.join(outputDir, "index.html"), indexHtml);
+
+  const blogHtml = indexTemplate.replace(
+    "{{content}}",
+    `
+  <section id="blog">
+    <h1>Blog Posts</h1>
+    <ul class="post-list">
+      ${postLinks}
+    </ul>
+  </section>`);
+  await fs.writeFile(path.join(outputDir, "blog.html"), blogHtml);
 
   // Copy CSS file
   await fs.copyFile(
@@ -191,6 +182,14 @@ async function generateBlog() {
     path.join(process.cwd(), "src", "templates", "404.html"),
     path.join(postsOutputDir, "404.html")
   );
+
+  const imagesDir = path.join(process.cwd(), "src", "images");
+  const imagesOutputDir = path.join(outputDir, "images");
+  await fs.mkdir(imagesOutputDir, { recursive: true });
+  const imageFiles = await fs.readdir(imagesDir);
+  for (const file of imageFiles) {
+    await fs.copyFile(path.join(imagesDir, file), path.join(imagesOutputDir, file));
+  }
 
   console.log("Blog generated successfully!");
 }
