@@ -3,11 +3,11 @@ const pathname = Astro.url.pathname;
 ---
 
 <header class="site-header">
-  <nav>
-    <div class="nav-links">
+  <div class="header-right">
+    <nav class="nav-links">
       <a href="/" class:list={[{ active: pathname === '/' }]}>home</a>
       <a href="/blog" class:list={[{ active: pathname.startsWith('/blog') }]}>blog</a>
-    </div>
+    </nav>
     <button
       class="theme-toggle"
       aria-label="Toggle dark mode"
@@ -16,15 +16,21 @@ const pathname = Astro.url.pathname;
       <span class="theme-icon-light">☀</span>
       <span class="theme-icon-dark">☾</span>
     </button>
-  </nav>
+  </div>
 </header>
 
 <style>
-  .site-header nav {
+  .site-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
   }
 
   .nav-links {
