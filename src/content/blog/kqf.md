@@ -1,13 +1,16 @@
 ---
+title: "KQF: An alternative approach to resource allocation"
 date: 2024-09-09
+description: "Introducing Knapsack Quadratic Funding — a mechanism to complement QF by improving accountability and efficient resource allocation."
 ---
-# KQF: An alternative approach to resource allocation
-Special thanks to Avsa, Danimim and Kevin Owocki for the feedback and discussions
 
-## TL;DR 
+Special thanks to Avsa, Danimim and Kevin Owocki for the feedback and discussions.
+
+## TL;DR
+
 This post introduces Knapsack Quadratic Funding (KQF). KQF aims to complement QF by improving accountability to grantees and efficient resource allocation.
 
-![kqf](https://hackmd.io/_uploads/HJnJ2UXnA.jpg =30%x)
+![kqf](https://hackmd.io/_uploads/HJnJ2UXnA.jpg)
 
 ## Current challenges in funding new projects
 
@@ -72,10 +75,6 @@ While KQF shows promise, several questions remain:
 Further research and possibly some simulations or small-scale trials could help answer these questions and refine the KQF concept.
 
 Feedback and critiques from the community will be crucial in evaluating and improving this proposal. The goal is to continue evolving our funding mechanisms to better serve the needs of both project creators and donors in the ecosystem.
-
-*[QF]: Quadratic Funding
-*[KQF]: Knapsack Quadratic Funding
-*[ENS]: Ethereum Name Service
 
 [^1]: https://developers.google.com/optimization/pack/knapsack
 [^2]: https://discuss.ens.domains/t/temp-check-proposal-for-new-service-provider-streams/18044

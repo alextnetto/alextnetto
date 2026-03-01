@@ -1,0 +1,548 @@
+/* ============================================
+   alextnetto.com — LaTeX Paper Aesthetic
+   Mobile-first, light/dark toggle
+   ============================================ */
+
+/* --- Color Palettes --- */
+:root {
+  --bg: #ffffff;
+  --bg-secondary: #f8f8f8;
+  --text: #1a1a1a;
+  --text-secondary: #555;
+  --text-muted: #888;
+  --accent: #1a5276;
+  --accent-hover: #0e3a54;
+  --border: #ddd;
+  --border-light: #eee;
+  --code-bg: #f4f4f4;
+  --code-text: #1a1a1a;
+  --blockquote-border: #ccc;
+  --blockquote-text: #555;
+  --table-stripe: #f9f9f9;
+  --selection-bg: #b3d4fc;
+  --shadow: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] {
+  --bg: #111111;
+  --bg-secondary: #1a1a1a;
+  --text: #e0e0e0;
+  --text-secondary: #aaa;
+  --text-muted: #777;
+  --accent: #7ab8e0;
+  --accent-hover: #a0d0f0;
+  --border: #333;
+  --border-light: #222;
+  --code-bg: #1e1e1e;
+  --code-text: #d4d4d4;
+  --blockquote-border: #444;
+  --blockquote-text: #aaa;
+  --table-stripe: #1a1a1a;
+  --selection-bg: #264f78;
+  --shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* --- Reset & Base --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: var(--selection-bg);
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Crimson Text', 'Georgia', 'Times New Roman', serif;
+  font-size: 18px;
+  line-height: 1.75;
+  color: var(--text);
+  background-color: var(--bg);
+  margin: 0;
+  padding: 0;
+  transition: color 0.3s ease, background-color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* --- Layout --- */
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+/* --- Navigation --- */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border-light);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.site-header nav {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-name {
+  font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+
+.site-name:hover {
+  color: var(--accent);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.nav-links a {
+  font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  letter-spacing: 0.02em;
+}
+
+.nav-links a:hover {
+  color: var(--accent);
+}
+
+/* --- Theme Toggle --- */
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  color: var(--text-secondary);
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* --- Typography --- */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--text);
+  font-weight: 600;
+  line-height: 1.3;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+h1 {
+  font-size: 1.8rem;
+  margin-top: 0;
+}
+
+h2 {
+  font-size: 1.4rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+h3 {
+  font-size: 1.15rem;
+}
+
+h4, h5, h6 {
+  font-size: 1rem;
+}
+
+p {
+  margin: 0 0 1.25rem;
+}
+
+/* --- Links --- */
+a {
+  color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+/* --- Lists --- */
+ul, ol {
+  padding-left: 1.5rem;
+  margin: 0 0 1.25rem;
+}
+
+li {
+  margin-bottom: 0.35rem;
+}
+
+li > ul, li > ol {
+  margin-top: 0.35rem;
+  margin-bottom: 0;
+}
+
+/* --- Horizontal Rule --- */
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5rem 0;
+}
+
+/* --- Blockquotes --- */
+blockquote {
+  margin: 1.5rem 0;
+  padding: 0.25rem 1.25rem;
+  border-left: 3px solid var(--blockquote-border);
+  color: var(--blockquote-text);
+  font-style: italic;
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* --- Code --- */
+code {
+  font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', 'Liberation Mono', monospace;
+  font-size: 0.85em;
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 0.15em 0.35em;
+  border-radius: 3px;
+  transition: background-color 0.3s ease;
+}
+
+pre {
+  background: var(--code-bg);
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  border-radius: 4px;
+  margin: 1.5rem 0;
+  line-height: 1.5;
+  transition: background-color 0.3s ease;
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.85rem;
+}
+
+/* --- Tables --- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+th, td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+th {
+  font-weight: 600;
+  background: var(--bg-secondary);
+}
+
+tr:nth-child(even) {
+  background: var(--table-stripe);
+}
+
+/* --- Images --- */
+img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+figure {
+  margin: 1.5rem 0;
+}
+
+figcaption {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
+/* --- Footnotes --- */
+.footnotes {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.footnotes ol {
+  padding-left: 1.25rem;
+}
+
+.footnotes li {
+  margin-bottom: 0.5rem;
+}
+
+sup a {
+  font-size: 0.75rem;
+  text-decoration: none;
+  color: var(--accent);
+}
+
+/* --- Task Lists --- */
+.task-list-item {
+  list-style: none;
+  margin-left: -1.5rem;
+}
+
+.task-list-item input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+/* --- Abbreviations --- */
+abbr[title] {
+  text-decoration: underline dotted var(--text-muted);
+  cursor: help;
+}
+
+/* --- Footer --- */
+.site-footer {
+  border-top: 1px solid var(--border-light);
+  padding: 2rem 1.25rem;
+  text-align: center;
+  transition: border-color 0.3s ease;
+}
+
+.site-footer .footer-inner {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.social-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.social-links a:hover {
+  color: var(--accent);
+}
+
+.social-links svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.footer-text {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.footer-text a {
+  color: var(--text-muted);
+}
+
+.footer-text a:hover {
+  color: var(--accent);
+}
+
+/* --- Homepage Sections --- */
+.hero h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.hero .tagline {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  margin-bottom: 0;
+  font-style: italic;
+}
+
+.section {
+  margin-bottom: 0.5rem;
+}
+
+.section h2 {
+  font-size: 1.3rem;
+  margin-bottom: 0.75rem;
+}
+
+.project-item {
+  margin-bottom: 1rem;
+}
+
+.project-item strong {
+  display: block;
+  margin-bottom: 0.1rem;
+}
+
+.project-item p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.achievement-group {
+  margin-bottom: 1.5rem;
+}
+
+.achievement-group h3 {
+  font-size: 1.05rem;
+  border-top: none;
+  padding-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+/* --- Blog List --- */
+.post-list {
+  list-style: none;
+  padding: 0;
+}
+
+.post-list li {
+  margin-bottom: 1.25rem;
+}
+
+.post-list-date {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.post-list-title {
+  font-size: 1.1rem;
+}
+
+/* --- Post Page --- */
+.post-header {
+  margin-bottom: 2rem;
+}
+
+.post-header h1 {
+  margin-bottom: 0.5rem;
+}
+
+.post-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.post-body {
+  margin-bottom: 3rem;
+}
+
+.post-nav {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+
+.post-nav a {
+  text-decoration: none;
+}
+
+/* --- KaTeX --- */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+}
+
+/* --- Print --- */
+@media print {
+  .site-header,
+  .site-footer,
+  .theme-toggle,
+  .post-nav {
+    display: none;
+  }
+
+  body {
+    font-size: 12pt;
+    color: #000;
+    background: #fff;
+  }
+
+  .content {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  a {
+    color: #000;
+    text-decoration: underline;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #555;
+  }
+}
+
+/* --- Responsive --- */
+@media (min-width: 768px) {
+  body {
+    font-size: 19px;
+  }
+
+  .content {
+    padding: 3rem 2rem 5rem;
+  }
+
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+}

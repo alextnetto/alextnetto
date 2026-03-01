@@ -1,0 +1,55 @@
+---
+const pathname = Astro.url.pathname;
+---
+
+<header class="site-header">
+  <nav>
+    <a href="/" class="site-name">alextnetto</a>
+    <div class="nav-links">
+      <a href="/" class:list={[{ active: pathname === '/' }]}>home</a>
+      <a href="/blog" class:list={[{ active: pathname.startsWith('/blog') }]}>blog</a>
+      <button
+        class="theme-toggle"
+        aria-label="Toggle dark mode"
+        title="Toggle dark mode"
+      >
+        <span class="theme-icon-light">☀</span>
+        <span class="theme-icon-dark">☾</span>
+      </button>
+    </div>
+  </nav>
+</header>
+
+<style>
+  .active {
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .theme-icon-dark {
+    display: none;
+  }
+
+  :global([data-theme="dark"]) .theme-icon-light {
+    display: none;
+  }
+
+  :global([data-theme="dark"]) .theme-icon-dark {
+    display: inline;
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector('.theme-toggle');
+  toggle?.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    if (next === systemTheme) {
+      localStorage.removeItem('theme');
+    } else {
+      localStorage.setItem('theme', next);
+    }
+  });
+</script>

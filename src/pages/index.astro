@@ -1,0 +1,214 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Base>
+  <div class="hero">
+    <h1>Alex Netto</h1>
+    <p class="tagline">Founder & CEO building at the intersection of software, security, and financial infrastructure.</p>
+  </div>
+
+  <hr />
+
+  <section class="section">
+    <h2>About</h2>
+    <p>
+      Born in Germany, raised in Brazil. Coding since 14, 6+ years in professional software engineering spanning fintech infrastructure, security, and product leadership. I founded and run <strong>blockful</strong>, a security and infrastructure company with a senior team of 10. Stanford invited speaker. Former competitive basketball player — sports taught me discipline and high agency. I speak Portuguese, English, Spanish, and German.
+    </p>
+    <p>
+      <a href="https://ncase.me/trust/">Optimism</a>, courage, and integrity are my core values.
+    </p>
+  </section>
+
+  <section class="section">
+    <h2>Now</h2>
+    <ul>
+      <li>CEO & Founder at <strong>blockful</strong> — security and infrastructure</li>
+      <li>ENS Delegate and Security Council member, protecting a ~$2B treasury</li>
+      <li>Researching mechanism design, governance, and public goods funding</li>
+      <li><a href="https://www.youtube.com/watch?v=RyEVflEF_qY">Stanford invited speaker</a> (2025, confirmed 2026)</li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>Experience</h2>
+
+    <div class="project-item">
+      <strong>CEO & Founder — blockful</strong>
+      <p>Founded a security and infrastructure company. Grew to 18 people, strategically consolidated to a senior team of 10. Directly sold $5M+ in services and software solutions. Three engagements with Brazil's Central Bank on CBDC programs. Organized event at B3 (Brazilian Stock Exchange) with DREX leadership. Co-designed a BRL-backed stablecoin architecture with Chainlink, Stark Bank, and Genial Investimentos.</p>
+    </div>
+
+    <div class="project-item">
+      <strong>CTO — Ayla</strong>
+      <p>Led a team of 4 at a real estate startup. Built proptech tools that drove a 70% increase in company revenue. Full ownership of technical strategy, product architecture, and delivery.</p>
+    </div>
+
+    <div class="project-item">
+      <strong>Senior Backend Engineer — Bava</strong>
+      <p>Built backend systems for a B2B financial services platform.</p>
+    </div>
+
+    <div class="project-item">
+      <strong>Full-Stack Engineer — TecBan</strong>
+      <p>Developed solutions for one of Brazil's largest financial infrastructure providers — operates the Banco24Horas ATM network serving 150M+ transactions/year.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Selected Projects</h2>
+
+    <div class="project-item">
+      <strong><a href="https://etherscan.io/address/0xb8fa0ce3f91f41c5292d07475b445c35ddf63ee0#code">ENS Security Council</a></strong>
+      <p>Smart contract development protecting a ~$2B DAO treasury. Authored the <a href="https://discuss.ens.domains/t/temp-check-enable-cancel-role-on-the-dao/19090">governance proposal</a> and led security research.</p>
+    </div>
+
+    <div class="project-item">
+      <strong><a href="/blog/kqf">Knapsack Quadratic Funding (KQF)</a></strong>
+      <p>Research on an alternative funding mechanism that improves accountability and resource allocation efficiency.</p>
+    </div>
+
+    <div class="project-item">
+      <strong><a href="https://github.com/metagov/daostar/blob/main/DAOIPs/daoip-6.md">DAOIP-6</a></strong>
+      <p>Co-authored a DAO interoperability standard for grant program reporting via Metagov/DAOstar.</p>
+    </div>
+
+    <div class="project-item">
+      <strong>Compound Governance Research</strong>
+      <p>Analysis of governance attack vectors in the Compound protocol.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Open Source</h2>
+
+    <div class="achievement-group">
+      <h3>Projects</h3>
+
+      <div class="project-item">
+        <strong><a href="https://github.com/blockful/anticapture">anticapture</a></strong>
+        <p>Governance monitoring platform. Built Arkham address enrichment, voting infrastructure, activity feeds, and per-DAO event thresholds.</p>
+      </div>
+
+      <div class="project-item">
+        <strong><a href="https://github.com/blockful/dao-proposals">dao-proposals</a></strong>
+        <p>ENS governance proposal review framework. Calldata decoding, verification, and security analysis for on-chain proposals protecting a ~$2B treasury.</p>
+      </div>
+
+      <div class="project-item">
+        <strong><a href="https://github.com/blockful/shutter-security-council">shutter-security-council</a></strong>
+        <p>Security council implementation with Shutter encrypted voting and Hats Protocol proposal gating.</p>
+      </div>
+
+      <div class="project-item">
+        <strong><a href="https://github.com/alextnetto/deadman-switch-safe">deadman-switch-safe</a></strong>
+        <p>Dead man's switch module for Gnosis Safe — automatic asset recovery if the owner becomes inactive.</p>
+      </div>
+
+      <div class="project-item">
+        <strong><a href="https://github.com/alextnetto/vaultr">vaultr</a></strong>
+        <p>Secure personal data sharing with expiring links.</p>
+      </div>
+
+      <div class="project-item">
+        <strong><a href="https://github.com/metagov/daostar/blob/main/DAOIPs/daoip-6.md">DAOIP-6</a></strong>
+        <p>Co-authored a DAO interoperability standard for grant program reporting via Metagov/DAOstar.</p>
+      </div>
+    </div>
+
+    <div class="achievement-group">
+      <h3>Contributions</h3>
+
+      <div class="project-item">
+        <strong><a href="https://github.com/safe-global/safe-wallet-monorepo/pull/7124">Safe&#123;Wallet&#125;</a></strong>
+        <p>Added ENS name resolution to account list items. Merged into the main Safe smart account wallet used by thousands of teams.</p>
+      </div>
+
+      <div class="project-item">
+        <strong><a href="https://github.com/steipete/gogcli/pull/263">gogcli</a></strong>
+        <p>Added <code>docs comments</code> subcommand for managing Google Doc comments to this Google Suite CLI tool.</p>
+      </div>
+
+      <div class="project-item">
+        <strong><a href="https://github.com/openclaw/openclaw/pull/16441">openclaw</a></strong>
+        <p>Contributing Telegram forum topic matching and auth UX improvements to this open-source AI assistant platform.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Speaking & Teaching</h2>
+    <ul>
+      <li><strong><a href="https://www.youtube.com/watch?v=RyEVflEF_qY">Stanford University</a></strong> — invited speaker on security research (2025, confirmed 2026)</li>
+      <li>ETH Denver 2023, SmartCon 2023 — bootcamp instructor</li>
+      <li>Federal University of Paraná — blockchain fundamentals bootcamp</li>
+      <li>ENS Workshop at ETH Samba</li>
+      <li>Speaker at conferences across Brazil, US (Denver, SF, NYC), Switzerland, Turkey, and Spain</li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>Awards</h2>
+
+    <div class="achievement-group">
+      <h3>Academic</h3>
+      <ul>
+        <li>Gold Medal — State Math Olympic</li>
+        <li>Silver Medal — Brazilian National Math Olympic</li>
+      </ul>
+    </div>
+
+    <div class="achievement-group">
+      <h3>Hackathons — 15+ prizes</h3>
+      <ul>
+        <li>ETH Belgrade 2024 — 1st place, largest prize</li>
+        <li>ETHGlobal Brussels — Uniswap + Pancakeswap prizes</li>
+        <li>SmartCon 2023 — 1st place, Chainlink Functions</li>
+        <li>ETH Rio 2023 — 2 categories, AI delegates</li>
+        <li>ETHGlobal NYC — 2 category prizes</li>
+        <li>ETH Samba 2023 — 3 category prizes</li>
+        <li>ETH São Paulo 2022 — grand prize</li>
+        <li>ETH Rio 2022 — 1st place, DeFi</li>
+        <li>NASA SpaceApps — 1st place</li>
+        <li>AutTech Hackathon — 1st place</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Community</h2>
+    <ul>
+      <li>Organized <strong>ETHFloripa</strong>, <strong>ZuFloripa</strong>, and frENS hour @ Devconnect 2023</li>
+      <li>Event at B3 headquarters with Brazil's CBDC director</li>
+      <li>Kernel Fellow, Chainlink Developer Expert, Zuzalian</li>
+      <li>ENS & Chainlink meetup @ ETH Belgrade</li>
+    </ul>
+  </section>
+
+  <section class="section">
+    <h2>Education</h2>
+    <p>
+      Computer Science — Federal University of Santa Catarina (UFSC), Florianópolis, Brazil.
+    </p>
+  </section>
+
+  {posts.length > 0 && (
+    <section class="section">
+      <h2>Writing</h2>
+      <ul class="post-list">
+        {posts.map((post) => (
+          <li>
+            <span class="post-list-date">
+              {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+            </span>
+            <a href={`/blog/${post.id}`} class="post-list-title">{post.data.title}</a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+</Base>
