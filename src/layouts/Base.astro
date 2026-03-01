@@ -10,7 +10,7 @@ interface Props {
 
 const {
   title = 'Alexandro Netto',
-  description = 'Founder & CEO of blockful. Building at the intersection of software, security, and financial infrastructure.',
+  description = 'Founder & CEO of blockful. Working at the intersection of game theory, economy, and bytes.',
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
@@ -71,8 +71,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       <main class="content">
         <Header />
         <slot />
+        <Footer />
       </main>
-      <Footer />
     </div>
   </body>
 </html>
