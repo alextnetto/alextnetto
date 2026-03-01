@@ -86,56 +86,6 @@ body {
   padding: 2rem 1.25rem 4rem;
 }
 
-/* --- Navigation --- */
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border-light);
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-.site-header nav {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 0.75rem 1.25rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.site-name {
-  font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--text);
-  text-decoration: none;
-  letter-spacing: -0.02em;
-}
-
-.site-name:hover {
-  color: var(--accent);
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-}
-
-.nav-links a {
-  font-family: 'JetBrains Mono', 'SF Mono', 'Consolas', monospace;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  text-decoration: none;
-  letter-spacing: 0.02em;
-}
-
-.nav-links a:hover {
-  color: var(--accent);
-}
-
 /* --- Theme Toggle --- */
 .theme-toggle {
   background: none;
@@ -343,49 +293,24 @@ abbr[title] {
 .site-footer {
   border-top: 1px solid var(--border-light);
   padding: 2rem 1.25rem;
-  text-align: center;
+  max-width: 720px;
+  margin: 0 auto;
   transition: border-color 0.3s ease;
 }
 
-.site-footer .footer-inner {
-  max-width: 720px;
-  margin: 0 auto;
-}
-
-.social-links {
+.footer-links {
   display: flex;
-  justify-content: center;
-  gap: 1.5rem;
-  margin-bottom: 1rem;
+  gap: 1.25rem;
+  flex-wrap: wrap;
 }
 
-.social-links a {
+.footer-links a {
+  font-size: 0.95rem;
   color: var(--text-muted);
   text-decoration: none;
-  transition: color 0.2s;
 }
 
-.social-links a:hover {
-  color: var(--accent);
-}
-
-.social-links svg {
-  width: 20px;
-  height: 20px;
-  fill: currentColor;
-}
-
-.footer-text {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.footer-text a {
-  color: var(--text-muted);
-}
-
-.footer-text a:hover {
+.footer-links a:hover {
   color: var(--accent);
 }
 
@@ -502,7 +427,6 @@ abbr[title] {
 
 /* --- Print --- */
 @media print {
-  .site-header,
   .site-footer,
   .theme-toggle,
   .post-nav {
