@@ -422,6 +422,127 @@ abbr[title] {
   text-decoration: none;
 }
 
+/* --- Talks Page --- */
+html[data-lang="en"] [data-lang-block="pt"],
+html:not([data-lang="en"]) [data-lang-block="en"] {
+  display: none;
+}
+
+.talks-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.lang-switch {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.lang-switch button {
+  background: none;
+  border: none;
+  padding: 0.2rem 0.1rem;
+  font: inherit;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.lang-switch button:hover {
+  color: var(--accent);
+}
+
+html:not([data-lang="en"]) .lang-switch [data-set-lang="pt"],
+html[data-lang="en"] .lang-switch [data-set-lang="en"] {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.talks-intro {
+  font-size: 1.05rem;
+}
+
+.talks-bio {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.talk-list {
+  margin: 2rem 0;
+  border-top: 1px solid var(--border-light);
+}
+
+.talk {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.talk summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  list-style: none;
+  cursor: pointer;
+  margin: 0 -0.5rem;
+  padding: 0.7rem 0.5rem;
+  border-radius: 4px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  transition: background-color 0.15s ease;
+}
+
+.talk summary::-webkit-details-marker {
+  display: none;
+}
+
+.talk summary::before {
+  content: '▸';
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1rem;
+  text-align: center;
+  color: var(--text-muted);
+  transition: transform 0.15s ease;
+}
+
+.talk[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.talk summary:hover {
+  background: var(--bg-secondary);
+}
+
+.talk summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.talk-body {
+  padding: 0.25rem 0 1.25rem 1.6rem;
+  font-size: 0.95rem;
+}
+
+.talk-body h3 {
+  font-size: 1rem;
+  margin: 1.5rem 0 0.4rem;
+}
+
+.talk-body ul,
+.talk-body ol {
+  margin-bottom: 0.75rem;
+}
+
+.talks-cta {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
 /* --- KaTeX --- */
 .katex-display {
   overflow-x: auto;
