@@ -1,0 +1,114 @@
+---
+import Base from '../layouts/Base.astro';
+import { getCollection, render } from 'astro:content';
+
+const copy = {
+  pt: {
+    htmlLang: 'pt-BR',
+    heading: 'Palestras',
+    intro: 'Palestras que eu levo para eventos, empresas, universidades e associações. Clique no título para ver o conteúdo de cada uma.',
+    bio: 'Sou fundador e CEO da blockful, empresa de segurança e infraestrutura. Palestrei duas vezes em Stanford sobre uma pesquisa de cibersegurança e já falei em eventos no Brasil, nos Estados Unidos, na Suíça, na Turquia e na Espanha.',
+    ctaStart: 'Quer uma dessas palestras no seu evento? Me chama no',
+    or: 'ou no',
+    ctaEnd: 'Duração e profundidade se ajustam ao público, em português ou em inglês.',
+  },
+  en: {
+    htmlLang: 'en',
+    heading: 'Talks',
+    intro: 'Talks I give at conferences, companies, universities and associations. Click a title to see what each one covers.',
+    bio: 'I am the founder and CEO of blockful, a security and infrastructure company. I have spoken twice at Stanford about cybersecurity research, and at events in Brazil, the United States, Switzerland, Turkey and Spain.',
+    ctaStart: 'Want one of these talks at your event? Reach me on',
+    or: 'or',
+    ctaEnd: 'Length and depth adapt to the audience, in English or Portuguese.',
+  },
+} as const;
+
+const langs = ['pt', 'en'] as const;
+const talks = await getCollection('talks');
+
+const sections = await Promise.all(
+  langs.map(async (lang) => ({
+    lang,
+    items: await Promise.all(
+      talks
+        .filter((talk) => talk.id.startsWith(`${lang}/`))
+        .sort((a, b) => a.data.order - b.data.order)
+        .map(async (talk) => ({ title: talk.data.title, Content: (await render(talk)).Content }))
+    ),
+  }))
+);
+---
+
+<Base title="Talks — Alexandro Netto" description="Talks by Alex Netto on AI, Service-as-Software and AI risk, in English and Portuguese.">
+  <script is:inline>
+    (() => {
+      const valid = ['pt', 'en'];
+      const param = new URLSearchParams(location.search).get('lang');
+      let stored = null;
+      try { stored = localStorage.getItem('talks-lang'); } catch {}
+      const lang = valid.includes(param) ? param
+        : valid.includes(stored) ? stored
+        : (navigator.language || '').toLowerCase().startsWith('pt') ? 'pt' : 'en';
+      document.documentElement.dataset.lang = lang;
+      document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+    })();
+  </script>
+
+  <div class="talks-top">
+    <h1>
+      {langs.map((lang) => <span data-lang-block={lang}>{copy[lang].heading}</span>)}
+    </h1>
+    <div class="lang-switch" role="group" aria-label="Idioma / Language">
+      <button type="button" data-set-lang="pt" lang="pt-BR">PT</button>
+      <span aria-hidden="true">/</span>
+      <button type="button" data-set-lang="en" lang="en">EN</button>
+    </div>
+  </div>
+
+  {sections.map(({ lang, items }) => (
+    <div data-lang-block={lang} lang={copy[lang].htmlLang}>
+      <p class="talks-intro">{copy[lang].intro}</p>
+      <p class="talks-bio">{copy[lang].bio}</p>
+
+      <div class="talk-list">
+        {items.map(({ title, Content }) => (
+          <details class="talk">
+            <summary>{title}</summary>
+            <div class="talk-body">
+              <Content />
+            </div>
+          </details>
+        ))}
+      </div>
+
+      <p class="talks-cta">
+        {copy[lang].ctaStart} <a href="https://www.linkedin.com/in/alextnetto" target="_blank" rel="noopener noreferrer">LinkedIn</a> {copy[lang].or} <a href="https://t.me/alextnetto" target="_blank" rel="noopener noreferrer">Telegram</a>. {copy[lang].ctaEnd}
+      </p>
+    </div>
+  ))}
+</Base>
+
+<script>
+  const root = document.documentElement;
+  const buttons = document.querySelectorAll<HTMLButtonElement>('[data-set-lang]');
+
+  const sync = () => {
+    const current = root.dataset.lang === 'en' ? 'en' : 'pt';
+    buttons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.setLang === current)));
+  };
+
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const lang = button.dataset.setLang === 'en' ? 'en' : 'pt';
+      root.dataset.lang = lang;
+      root.lang = lang === 'pt' ? 'pt-BR' : 'en';
+      try { localStorage.setItem('talks-lang', lang); } catch {}
+      const url = new URL(location.href);
+      url.searchParams.set('lang', lang);
+      history.replaceState(null, '', url);
+      sync();
+    });
+  });
+
+  sync();
+</script>

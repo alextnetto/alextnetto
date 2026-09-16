@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://alextnetto.com/sitemap-index.xml
+Sitemap: https://empiric.observer/sitemap-index.xml
