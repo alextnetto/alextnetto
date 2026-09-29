@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://empiric.observer/sitemap-index.xml
+Sitemap: https://alexnet.to/sitemap-index.xml
