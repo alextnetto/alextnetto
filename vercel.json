@@ -1,0 +1,5 @@
+{
+  "redirects": [
+    { "source": "/talks", "destination": "https://alexnet.to/palestras", "permanent": true }
+  ]
+}
