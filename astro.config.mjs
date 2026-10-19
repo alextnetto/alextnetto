@@ -9,7 +9,8 @@ export default defineConfig({
   // Static pages; only /api/lead (contact form) runs as a Vercel function.
   output: 'static',
   adapter: vercel(),
-  integrations: [sitemap()],
+  // /links is the hidden link-in-bio page: no sitemap entry, noindex.
+  integrations: [sitemap({ filter: (page) => !/\/links\/?$/.test(page) })],
   markdown: {
     remarkPlugins: [remarkMath],
     rehypePlugins: [rehypeKatex],
