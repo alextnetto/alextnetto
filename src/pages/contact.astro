@@ -1,0 +1,283 @@
+---
+import Base from '../layouts/Base.astro';
+import LangSwitch from '../components/LangSwitch.astro';
+import type { LeadKind } from '../lib/lead';
+
+const langs = ['pt', 'en'] as const;
+type Lang = (typeof langs)[number];
+
+const copy = {
+  pt: {
+    htmlLang: 'pt-BR',
+    heading: 'Contato',
+    intro: 'Há três formas de trabalhar comigo. Escolha uma no formulário abaixo e conte em poucas linhas o que você precisa. Eu leio tudo o que chega.',
+    ways: [
+      {
+        title: 'Palestras',
+        body: 'Para eventos, empresas, universidades e associações, em português ou inglês. Os temas estão na página de <a href="/talks?lang=pt">palestras</a>.',
+      },
+      {
+        title: 'Advisor em tecnologia e IA',
+        body: 'Para founders e executivos que querem alguém de tecnologia ao lado nas decisões: por onde começar com IA, o que comprar, o que construir e como preparar o time. O formato a gente combina na conversa.',
+      },
+      {
+        title: 'IA na sua empresa',
+        body: 'Eu e meu time entramos na operação, achamos os processos que mais consomem horas e colocamos agentes de IA funcionando nos sistemas que a equipe já usa. Dá para começar por um diagnóstico.',
+      },
+    ],
+  },
+  en: {
+    htmlLang: 'en',
+    heading: 'Contact',
+    intro: 'There are three ways to work with me. Pick one in the form below and tell me in a few lines what you need. I read everything that comes in.',
+    ways: [
+      {
+        title: 'Talks',
+        body: 'For conferences, companies, universities and associations, in English or Portuguese. The topics are on the <a href="/talks?lang=en">talks</a> page.',
+      },
+      {
+        title: 'Advisor in technology and AI',
+        body: 'For founders and executives who want someone technical at their side for the decisions: where to start with AI, what to buy, what to build and how to prepare the team. We agree on the format when we talk.',
+      },
+      {
+        title: 'AI in your company',
+        body: 'My team and I step into your operation, find the processes that take the most hours and put AI agents to work in the systems your team already uses. It can start with a diagnosis.',
+      },
+    ],
+  },
+} as const;
+
+const kinds: { kind: LeadKind; label: Record<Lang, string> }[] = [
+  { kind: 'palestra', label: { pt: 'Palestra', en: 'A talk' } },
+  { kind: 'advisor', label: { pt: 'Advisor em tecnologia e IA', en: 'An advisor in technology and AI' } },
+  { kind: 'empresa', label: { pt: 'IA na minha empresa', en: 'AI in my company' } },
+];
+
+const fields = {
+  legend: { pt: 'O que você procura', en: 'What are you looking for' },
+  name: { pt: 'Nome', en: 'Name' },
+  email: { pt: 'E-mail', en: 'Email' },
+  whatsapp: { pt: 'WhatsApp com DDD', en: 'WhatsApp, with country code' },
+  company: { pt: 'Empresa, evento ou LinkedIn', en: 'Company, event or LinkedIn' },
+  message: { pt: 'Conte em poucas linhas', en: 'Tell me in a few lines' },
+  consent: {
+    pt: 'Concordo que meus dados fiquem no CRM que eu e meu time usamos, só para responder a este pedido.',
+    en: 'I agree that my details are kept in the CRM my team uses, only to reply to this request.',
+  },
+  send: { pt: 'Enviar', en: 'Send' },
+  doneTitle: { pt: 'Recebido. Obrigado,', en: 'Received. Thank you,' },
+  doneBody: {
+    pt: 'Vou ler a sua mensagem. Se houver encaixe, eu ou alguém do meu time responde pelo WhatsApp ou por e-mail.',
+    en: 'I will read your message. If there is a fit, I or someone on my team will reply by WhatsApp or email.',
+  },
+} as const;
+---
+
+<Base title="Contact Alex Netto" description="Talks, advisor in technology and AI, and AI agents in your company. Contact form in Portuguese or English.">
+  <LangSwitch>
+    <h1>
+      {langs.map((lang) => <span data-lang-block={lang}>{copy[lang].heading}</span>)}
+    </h1>
+  </LangSwitch>
+
+  {langs.map((lang) => (
+    <div data-lang-block={lang} lang={copy[lang].htmlLang}>
+      <p class="talks-intro">{copy[lang].intro}</p>
+      {copy[lang].ways.map((way) => (
+        <div class="project-item">
+          <strong>{way.title}</strong>
+          <p set:html={way.body} />
+        </div>
+      ))}
+    </div>
+  ))}
+
+  <form class="contact-form" id="contact-form" novalidate>
+    <fieldset>
+      <legend>{langs.map((lang) => <span data-lang-block={lang}>{fields.legend[lang]}</span>)}</legend>
+      <div class="kind-options">
+        {kinds.map(({ kind, label }) => (
+          <label>
+            <input type="radio" name="kind" value={kind} required checked={kind === 'advisor'} />
+            <span>{langs.map((lang) => <span data-lang-block={lang}>{label[lang]}</span>)}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <div class="field-row">
+      <label class="field">
+        <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.name[lang]}</span>)}</span>
+        <input name="name" autocomplete="name" required maxlength="120" />
+      </label>
+      <label class="field">
+        <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.email[lang]}</span>)}</span>
+        <input name="email" type="email" autocomplete="email" required maxlength="200" />
+      </label>
+    </div>
+
+    <div class="field-row">
+      <label class="field">
+        <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.whatsapp[lang]}</span>)}</span>
+        <input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" required maxlength="40" />
+      </label>
+      <label class="field">
+        <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.company[lang]}</span>)}</span>
+        <input name="company" autocomplete="organization" required maxlength="200" />
+      </label>
+    </div>
+
+    <label class="field">
+      <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.message[lang]}</span>)}</span>
+      <textarea name="message" rows="4" required maxlength="2000"></textarea>
+    </label>
+
+    <label class="hp" aria-hidden="true">
+      Website <input name="website" tabindex="-1" autocomplete="off" />
+    </label>
+
+    <label class="consent">
+      <input type="checkbox" name="consent" required />
+      <span>{langs.map((lang) => <span data-lang-block={lang}>{fields.consent[lang]}</span>)}</span>
+    </label>
+
+    <div class="form-foot">
+      <button class="form-submit" type="submit">
+        {langs.map((lang) => <span data-lang-block={lang}>{fields.send[lang]}</span>)}
+      </button>
+      <p class="form-status" role="status" aria-live="polite"></p>
+    </div>
+  </form>
+
+  <div class="form-done" id="form-done" hidden tabindex="-1">
+    {langs.map((lang) => (
+      <div data-lang-block={lang} lang={copy[lang].htmlLang}>
+        <p><strong>{fields.doneTitle[lang]} <span data-first-name></span>.</strong></p>
+        <p>{fields.doneBody[lang]}</p>
+      </div>
+    ))}
+  </div>
+</Base>
+
+<script>
+  type Lang = 'pt' | 'en';
+
+  const PLACEHOLDERS: Record<Lang, Record<string, string>> = {
+    pt: {
+      palestra: 'Ex.: evento para 200 gestores de varejo em São Paulo, em março, 40 minutos.',
+      advisor: 'Ex.: sou CEO de uma distribuidora e quero alguém de tecnologia ao meu lado para decidir onde usar IA.',
+      empresa: 'Ex.: o time comercial gasta 3 horas por dia montando propostas no ERP.',
+    },
+    en: {
+      palestra: 'E.g.: a conference for 200 retail managers in March, 40 minutes.',
+      advisor: 'E.g.: I run a distribution company and want someone technical at my side to decide where to use AI.',
+      empresa: 'E.g.: our sales team spends 3 hours a day putting proposals together in the ERP.',
+    },
+  };
+
+  const MESSAGES: Record<Lang, Record<string, string>> = {
+    pt: {
+      required: 'Preencha os campos obrigatórios.',
+      consent: 'Para enviar, marque a caixa de consentimento.',
+      sending: 'Enviando…',
+      failed: 'Não consegui enviar agora. Tente de novo em alguns minutos ou me chame no Telegram (@alextnetto).',
+      offline: 'Sem conexão. Tente de novo em alguns minutos ou me chame no Telegram (@alextnetto).',
+    },
+    en: {
+      required: 'Please fill in the required fields.',
+      consent: 'To send, please tick the consent box.',
+      sending: 'Sending…',
+      failed: 'I could not send it right now. Try again in a few minutes or reach me on Telegram (@alextnetto).',
+      offline: 'No connection. Try again in a few minutes or reach me on Telegram (@alextnetto).',
+      invalid: 'Please check the fields and try again.',
+    },
+  };
+
+  // ?type= (English) and ?tipo= (Portuguese) both preselect the option.
+  const KIND_ALIASES: Record<string, string> = {
+    talk: 'palestra',
+    palestra: 'palestra',
+    advisor: 'advisor',
+    mentoria: 'advisor',
+    company: 'empresa',
+    empresa: 'empresa',
+  };
+
+  const root = document.documentElement;
+  const form = document.querySelector<HTMLFormElement>('#contact-form')!;
+  const done = document.querySelector<HTMLElement>('#form-done')!;
+  const status = form.querySelector<HTMLElement>('.form-status')!;
+  const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const message = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]')!;
+  const startedAt = Date.now();
+
+  const lang = (): Lang => (root.dataset.lang === 'en' ? 'en' : 'pt');
+  const currentKind = () => form.querySelector<HTMLInputElement>('input[name="kind"]:checked')?.value ?? 'advisor';
+  const syncPlaceholder = () => {
+    message.placeholder = PLACEHOLDERS[lang()][currentKind()] ?? '';
+  };
+
+  const params = new URLSearchParams(location.search);
+  const preset = KIND_ALIASES[params.get('type') ?? params.get('tipo') ?? ''];
+  const radio = preset && form.querySelector<HTMLInputElement>(`input[name="kind"][value="${preset}"]`);
+  if (radio) radio.checked = true;
+  syncPlaceholder();
+
+  form.addEventListener('change', (event) => {
+    if ((event.target as HTMLInputElement).name === 'kind') syncPlaceholder();
+  });
+  new MutationObserver(syncPlaceholder).observe(root, { attributes: true, attributeFilter: ['data-lang'] });
+
+  const showError = (text: string) => {
+    status.textContent = text;
+    status.classList.add('is-error');
+  };
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    status.textContent = '';
+    status.classList.remove('is-error');
+    const m = MESSAGES[lang()];
+
+    const invalid = Array.from(form.querySelectorAll<HTMLInputElement>('input, textarea')).find(
+      (el) => !el.checkValidity()
+    );
+    if (invalid) {
+      showError(invalid.type === 'checkbox' ? m.consent : m.required);
+      invalid.focus();
+      return;
+    }
+
+    const data = new FormData(form);
+    const payload = {
+      ...Object.fromEntries(data.entries()),
+      consent: data.get('consent') === 'on',
+      startedAt,
+    };
+
+    submit.disabled = true;
+    status.textContent = m.sending;
+    try {
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok) {
+        const firstName = String(payload.name ?? '').trim().split(/\s+/)[0];
+        done.querySelectorAll('[data-first-name]').forEach((el) => (el.textContent = firstName));
+        form.hidden = true;
+        done.hidden = false;
+        done.focus();
+        return;
+      }
+      // Server validation messages are written in Portuguese.
+      if (res.status === 400) showError(lang() === 'pt' && body.error ? body.error : m.invalid ?? m.required);
+      else showError(m.failed);
+    } catch {
+      showError(m.offline);
+    }
+    submit.disabled = false;
+  });
+</script>

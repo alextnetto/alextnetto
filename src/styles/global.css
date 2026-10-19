@@ -21,6 +21,7 @@
   --table-stripe: #f9f9f9;
   --selection-bg: #b3d4fc;
   --shadow: rgba(0, 0, 0, 0.05);
+  --error: #a12a2a;
 }
 
 [data-theme="dark"] {
@@ -40,6 +41,7 @@
   --table-stripe: #1a1a1a;
   --selection-bg: #264f78;
   --shadow: rgba(0, 0, 0, 0.3);
+  --error: #e58a8a;
 }
 
 /* --- Reset & Base --- */
@@ -543,6 +545,163 @@ html[data-lang="en"] .lang-switch [data-set-lang="en"] {
   color: var(--text-secondary);
 }
 
+/* --- Contact Form --- */
+.contact-form {
+  display: grid;
+  gap: 1.1rem;
+  margin: 2rem 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+/* Native radios and checkboxes follow the site theme, not the OS theme. */
+.contact-form {
+  color-scheme: light;
+}
+
+[data-theme="dark"] .contact-form {
+  color-scheme: dark;
+}
+
+.contact-form fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.contact-form legend,
+.field-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.kind-options {
+  display: grid;
+  gap: 0.2rem;
+  margin-top: 0.4rem;
+}
+
+.kind-options label,
+.consent {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  cursor: pointer;
+}
+
+.contact-form input[type="radio"],
+.contact-form input[type="checkbox"] {
+  accent-color: var(--accent);
+  margin: 0;
+}
+
+.field-row {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.45rem 0.65rem;
+  transition: border-color 0.2s;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field input:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.field textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.consent {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.form-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.form-submit {
+  font: inherit;
+  font-size: 1rem;
+  color: var(--accent);
+  background: none;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 0.35rem 1.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.form-submit:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.form-submit:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.form-submit:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.form-status {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.form-status.is-error {
+  color: var(--error);
+}
+
+.form-done {
+  margin: 2rem 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-light);
+}
+
+.form-done:focus {
+  outline: none;
+}
+
 /* --- KaTeX --- */
 .katex-display {
   overflow-x: auto;
@@ -593,5 +752,9 @@ html[data-lang="en"] .lang-switch [data-set-lang="en"] {
 
   .hero h1 {
     font-size: 2.2rem;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr 1fr;
   }
 }

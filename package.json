@@ -6,13 +6,18 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "test": "vitest run"
   },
   "dependencies": {
-    "astro": "^5.7.10",
-    "@astrojs/sitemap": "^3.3.1",
     "@astrojs/rss": "^4.0.11",
-    "remark-math": "^6.0.0",
-    "rehype-katex": "^7.0.1"
+    "@astrojs/sitemap": "^3.3.1",
+    "@astrojs/vercel": "^8.2.11",
+    "astro": "^5.7.10",
+    "rehype-katex": "^7.0.1",
+    "remark-math": "^6.0.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.7"
   }
 }
