@@ -1,0 +1,105 @@
+---
+// Link-in-bio page for the Instagram bio. Not in the menu or the sitemap, and noindex.
+// Each link sends an Umami event "links-<id>" with the page language.
+import Base from '../layouts/Base.astro';
+import LangSwitch from '../components/LangSwitch.astro';
+
+const langs = ['pt', 'en'] as const;
+type Lang = (typeof langs)[number];
+
+const intro: Record<Lang, string> = {
+  pt: 'IA aplicada a negócios. Fundador da blockful e construindo a Fator.',
+  en: 'AI applied to business. Founder of blockful, building Fator.',
+};
+
+const links: { id: string; href: (lang: Lang) => string; external?: boolean; title: Record<Lang, string>; note?: Record<Lang, string> }[] = [
+  {
+    id: 'palestra',
+    href: (lang) => `/contact?type=talk&lang=${lang}`,
+    title: { pt: 'Contratar uma palestra', en: 'Book a talk' },
+    note: {
+      pt: 'Service-as-Software, riscos de IA e o que aprendi no Vale do Silício.',
+      en: 'Service-as-Software, AI risks and what I learned in Silicon Valley.',
+    },
+  },
+  {
+    id: 'advisor',
+    href: (lang) => `/contact?type=advisor&lang=${lang}`,
+    title: { pt: 'Advisor em tecnologia e IA', en: 'Advisor in technology and AI' },
+    note: {
+      pt: 'Para founders e executivos decidindo onde usar IA.',
+      en: 'For founders and executives deciding where to use AI.',
+    },
+  },
+  {
+    id: 'empresa',
+    href: (lang) => `/contact?type=company&lang=${lang}`,
+    title: { pt: 'IA na sua empresa', en: 'AI in your company' },
+    note: {
+      pt: 'Agentes de IA funcionando nos sistemas que o seu time já usa.',
+      en: 'AI agents working in the systems your team already uses.',
+    },
+  },
+  {
+    id: 'palestras',
+    href: (lang) => `/talks?lang=${lang}`,
+    title: { pt: 'Ver as palestras', en: 'See the talks' },
+    note: { pt: 'O roteiro de cada tema.', en: 'What each topic covers.' },
+  },
+  {
+    id: 'stanford',
+    href: () => 'https://www.youtube.com/watch?v=RyEVflEF_qY',
+    external: true,
+    title: { pt: 'Palestra em Stanford (vídeo)', en: 'Stanford talk (video)' },
+    note: { pt: 'Pesquisa de cibersegurança.', en: 'Cybersecurity research.' },
+  },
+  {
+    id: 'res',
+    href: () => 'https://github.com/alextnetto/res',
+    external: true,
+    title: { pt: 'RES no GitHub', en: 'RES on GitHub' },
+    note: {
+      pt: 'Projeto aberto que ensina agentes de IA a estudar um software pelo navegador.',
+      en: 'Open-source skill that teaches AI agents to study a software product through the browser.',
+    },
+  },
+  {
+    id: 'linkedin',
+    href: () => 'https://www.linkedin.com/in/alextnetto',
+    external: true,
+    title: { pt: 'LinkedIn', en: 'LinkedIn' },
+  },
+  {
+    id: 'site',
+    href: () => '/',
+    title: { pt: 'Currículo e blog', en: 'CV and blog' },
+  },
+];
+---
+
+<Base title="Alex Netto: links" description={intro.en} noindex>
+  <LangSwitch>
+    <h1>Alex Netto</h1>
+  </LangSwitch>
+
+  {langs.map((lang) => (
+    <div data-lang-block={lang} lang={lang === 'pt' ? 'pt-BR' : 'en'}>
+      <p class="talks-intro">{intro[lang]}</p>
+      <ul class="link-list">
+        {links.map((link) => (
+          <li>
+            <a
+              href={link.href(lang)}
+              data-umami-event={`links-${link.id}`}
+              data-umami-event-lang={lang}
+              {...(link.external ? { rel: 'noopener noreferrer' } : {})}
+            >
+              <span class="link-title">{link.title[lang]}</span>
+              {link.note && <span class="link-note">{link.note[lang]}</span>}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</Base>

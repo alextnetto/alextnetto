@@ -228,6 +228,10 @@ const fields = {
   });
   new MutationObserver(syncPlaceholder).observe(root, { attributes: true, attributeFilter: ['data-lang'] });
 
+  // Umami custom events (the script only loads when PUBLIC_UMAMI_WEBSITE_ID is set).
+  const track = (event: string, data: Record<string, string | number>) =>
+    (window as { umami?: { track: (e: string, d: object) => void } }).umami?.track(event, data);
+
   const showError = (text: string) => {
     status.textContent = text;
     status.classList.add('is-error');
@@ -265,6 +269,7 @@ const fields = {
       });
       const body = await res.json().catch(() => ({}));
       if (res.ok) {
+        track('form-contato-enviado', { tipo: String(payload.kind), lang: lang() });
         const firstName = String(payload.name ?? '').trim().split(/\s+/)[0];
         done.querySelectorAll('[data-first-name]').forEach((el) => (el.textContent = firstName));
         form.hidden = true;
@@ -272,6 +277,7 @@ const fields = {
         done.focus();
         return;
       }
+      track('form-contato-erro', { tipo: String(payload.kind), status: res.status });
       // Server validation messages are written in Portuguese.
       if (res.status === 400) showError(lang() === 'pt' && body.error ? body.error : m.invalid ?? m.required);
       else showError(m.failed);

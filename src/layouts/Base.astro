@@ -6,6 +6,8 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
+  /** Keeps the page out of search results (e.g. the /links page). */
+  noindex?: boolean;
 }
 
 const {
@@ -14,6 +16,9 @@ const {
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const { noindex = false } = Astro.props;
+// Umami Cloud, cookieless (same setup as fator.ai). No ID, no script.
+const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
 ---
 
 <!DOCTYPE html>
@@ -24,6 +29,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
+    {noindex && <meta name="robots" content="noindex" />}
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -65,6 +71,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       })();
       document.documentElement.setAttribute('data-theme', theme);
     </script>
+
+    <!-- Analytics: only counts visits on alexnet.to, not previews or localhost -->
+    {umamiWebsiteId && (
+      <script is:inline defer src="https://cloud.umami.is/script.js" data-website-id={umamiWebsiteId} data-domains="alexnet.to"></script>
+    )}
   </head>
   <body>
     <div class="page">
