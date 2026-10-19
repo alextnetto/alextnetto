@@ -563,6 +563,12 @@ html[data-lang="en"] .lang-switch [data-set-lang="en"] {
   color-scheme: dark;
 }
 
+.form-note {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
 .contact-form fieldset {
   border: none;
   margin: 0;

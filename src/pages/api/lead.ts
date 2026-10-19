@@ -12,8 +12,9 @@ export const POST: APIRoute = async ({ request }) => {
   if (parsed.status === 'invalid') return json(400, { error: parsed.error });
 
   const result = await submitLead(parsed.lead, process.env);
-  if (!result.pipedrive.ok) console.error('[lead] pipedrive:', result.pipedrive.error);
-  if (!result.email.ok) console.error('[lead] email:', result.email.error);
+  if (!result.trama.ok) console.error(`[lead ${parsed.lead.stage}] trama:`, result.trama.error);
+  if (!result.sheet.ok) console.error(`[lead ${parsed.lead.stage}] sheet:`, result.sheet.error);
   if (!result.ok) return json(502, { error: 'Não consegui enviar agora.' });
-  return json(200, { ok: true });
+  // The browser sends this ref back on the next save, so Trama keeps one deal per lead.
+  return json(200, { ok: true, ref: result.ref });
 };

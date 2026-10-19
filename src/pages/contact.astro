@@ -64,6 +64,10 @@ const fields = {
     pt: 'Concordo que meus dados fiquem no CRM que eu e meu time usamos, só para responder a este pedido.',
     en: 'I agree that my details are kept in the CRM my team uses, only to reply to this request.',
   },
+  saved: {
+    pt: 'Quando você informa o e-mail ou o WhatsApp, o que estiver preenchido fica salvo, mesmo antes de enviar, só para eu poder responder.',
+    en: 'Once you add your e-mail or WhatsApp, what you have filled in is saved, even before you send it, only so I can reply.',
+  },
   send: { pt: 'Enviar', en: 'Send' },
   doneTitle: { pt: 'Recebido. Obrigado,', en: 'Received. Thank you,' },
   doneBody: {
@@ -93,6 +97,8 @@ const fields = {
   ))}
 
   <form class="contact-form" id="contact-form" novalidate>
+    <p class="form-note">{langs.map((lang) => <span data-lang-block={lang}>{fields.saved[lang]}</span>)}</p>
+
     <fieldset>
       <legend>{langs.map((lang) => <span data-lang-block={lang}>{fields.legend[lang]}</span>)}</legend>
       <div class="kind-options">
@@ -211,6 +217,33 @@ const fields = {
   const message = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]')!;
   const startedAt = Date.now();
 
+  // One lead per visit: partial saves and the final submission share this id, and the
+  // ref the server returns, so Trama keeps one deal and the sheet one row.
+  const LEAD_KEY = 'contact-lead';
+  type Stored = { leadId: string; ref?: { dealId: string } };
+  let stored: Stored = (() => {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(LEAD_KEY) ?? 'null');
+      if (saved?.leadId) return saved;
+    } catch {}
+    return { leadId: crypto.randomUUID() };
+  })();
+  const persist = () => {
+    try {
+      sessionStorage.setItem(LEAD_KEY, JSON.stringify(stored));
+    } catch {}
+  };
+  persist();
+
+  // First touch of the visit, recorded by the layout (utm_source or external referrer).
+  const origin = (() => {
+    try {
+      return sessionStorage.getItem('first-touch') ?? '';
+    } catch {
+      return '';
+    }
+  })();
+
   const lang = (): Lang => (root.dataset.lang === 'en' ? 'en' : 'pt');
   const currentKind = () => form.querySelector<HTMLInputElement>('input[name="kind"]:checked')?.value ?? 'advisor';
   const syncPlaceholder = () => {
@@ -232,6 +265,66 @@ const fields = {
   const track = (event: string, data: Record<string, string | number>) =>
     (window as { umami?: { track: (e: string, d: object) => void } }).umami?.track(event, data);
 
+  const snapshot = () => {
+    const data = new FormData(form);
+    return {
+      leadId: stored.leadId,
+      kind: String(data.get('kind') ?? ''),
+      name: String(data.get('name') ?? ''),
+      email: String(data.get('email') ?? ''),
+      whatsapp: String(data.get('whatsapp') ?? ''),
+      company: String(data.get('company') ?? ''),
+      message: String(data.get('message') ?? ''),
+      website: String(data.get('website') ?? ''),
+      lang: lang(),
+      origin,
+    };
+  };
+  const hasContact = (s: ReturnType<typeof snapshot>) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.email.trim()) || s.whatsapp.replace(/\D/g, '').length >= 10;
+
+  // Saves run one at a time; the submit waits for the last one.
+  let saving: Promise<void> = Promise.resolve();
+  let lastSaved = '';
+  let completed = false;
+  const savePartial = () => {
+    saving = saving.then(async () => {
+      const current = snapshot();
+      const key = JSON.stringify(current);
+      if (completed || !hasContact(current) || key === lastSaved) return;
+      try {
+        const res = await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...current, stage: 'partial', ref: stored.ref, startedAt }),
+          keepalive: true,
+        });
+        if (!res.ok) return;
+        if (!lastSaved) track('form-contato-parcial', { tipo: current.kind, lang: current.lang });
+        lastSaved = key;
+        const body = await res.json().catch(() => ({}));
+        if (body.ref?.dealId) {
+          stored = { ...stored, ref: body.ref };
+          persist();
+        }
+      } catch {}
+    });
+    return saving;
+  };
+
+  let idle: number | undefined;
+  form.addEventListener('input', () => {
+    clearTimeout(idle);
+    idle = window.setTimeout(savePartial, 2000);
+  });
+  form.addEventListener('change', () => {
+    clearTimeout(idle);
+    savePartial();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') savePartial();
+  });
+
   const showError = (text: string) => {
     status.textContent = text;
     status.classList.add('is-error');
@@ -252,15 +345,17 @@ const fields = {
       return;
     }
 
-    const data = new FormData(form);
-    const payload = {
-      ...Object.fromEntries(data.entries()),
-      consent: data.get('consent') === 'on',
-      startedAt,
-    };
-
+    clearTimeout(idle);
     submit.disabled = true;
     status.textContent = m.sending;
+    await saving;
+    const payload = {
+      ...snapshot(),
+      stage: 'complete',
+      ref: stored.ref,
+      consent: (form.elements.namedItem('consent') as HTMLInputElement).checked,
+      startedAt,
+    };
     try {
       const res = await fetch('/api/lead', {
         method: 'POST',
@@ -269,6 +364,10 @@ const fields = {
       });
       const body = await res.json().catch(() => ({}));
       if (res.ok) {
+        completed = true;
+        try {
+          sessionStorage.removeItem(LEAD_KEY);
+        } catch {}
         track('form-contato-enviado', { tipo: String(payload.kind), lang: lang() });
         const firstName = String(payload.name ?? '').trim().split(/\s+/)[0];
         done.querySelectorAll('[data-first-name]').forEach((el) => (el.textContent = firstName));
