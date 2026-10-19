@@ -1,7 +1,7 @@
 ---
 title: "KQF: An alternative approach to resource allocation"
 date: 2024-09-09
-description: "Introducing Knapsack Quadratic Funding — a mechanism to complement QF by improving accountability and efficient resource allocation."
+description: "Introducing Knapsack Quadratic Funding, a mechanism to complement QF by improving accountability and efficient resource allocation."
 ---
 
 Special thanks to Avsa, Danimim and Kevin Owocki for the feedback and discussions.
