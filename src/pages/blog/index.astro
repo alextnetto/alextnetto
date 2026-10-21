@@ -1,22 +1,26 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Bi from '../../components/Bi.astro';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
+
+const postDate = (date: Date, locale: string) =>
+  date.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' });
 ---
 
 <Base title="Blog | Alexandro Netto" description="Writing about mechanism design, public goods, governance, and the Ethereum ecosystem.">
   <h1>Blog</h1>
 
-  {posts.length === 0 && <p>No posts yet.</p>}
+  {posts.length === 0 && <p><Bi en="No posts yet." pt="Nenhum texto ainda." /></p>}
 
   <ul class="post-list">
     {posts.map((post) => (
       <li>
         <span class="post-list-date">
-          {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          <Bi en={postDate(post.data.date, 'en-US')} pt={postDate(post.data.date, 'pt-BR')} />
         </span>
         <a href={`/blog/${post.id}`} class="post-list-title">{post.data.title}</a>
         {post.data.description && (

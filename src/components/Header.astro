@@ -1,14 +1,18 @@
 ---
+import Bi from './Bi.astro';
+import LangSwitch from './LangSwitch.astro';
+
 const pathname = Astro.url.pathname;
 ---
 
 <header class="site-header">
+  <LangSwitch />
   <div class="header-right">
     <nav class="nav-links">
-      <a href="/" class:list={[{ active: pathname === '/' }]}>home</a>
+      <a href="/" class:list={[{ active: pathname === '/' }]}><Bi en="home" pt="início" /></a>
       <a href="/blog" class:list={[{ active: pathname.startsWith('/blog') }]}>blog</a>
-      <a href="/talks" class:list={[{ active: pathname.startsWith('/talks') }]}>talks</a>
-      <a href="/contact" class:list={[{ active: pathname.startsWith('/contact') }]}>contact</a>
+      <a href="/talks" class:list={[{ active: pathname.startsWith('/talks') }]}><Bi en="talks" pt="palestras" /></a>
+      <a href="/contact" class:list={[{ active: pathname.startsWith('/contact') }]}><Bi en="contact" pt="contato" /></a>
     </nav>
     <button
       class="theme-toggle"
@@ -24,7 +28,7 @@ const pathname = Astro.url.pathname;
 <style>
   .site-header {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
     margin-bottom: 0.25rem;
   }
@@ -48,6 +52,14 @@ const pathname = Astro.url.pathname;
 
   .nav-links a:hover {
     color: var(--accent);
+  }
+
+  /* On phones the Portuguese menu is wider; tighter gaps keep the EN/PT switch apart from it. */
+  @media (max-width: 480px) {
+    .header-right,
+    .nav-links {
+      gap: 0.9rem;
+    }
   }
 
   .active {

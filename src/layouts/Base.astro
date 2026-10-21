@@ -72,6 +72,22 @@ const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
       document.documentElement.setAttribute('data-theme', theme);
     </script>
 
+    <!-- Language: ?lang= wins and is remembered, then the last choice, then English (see LangSwitch) -->
+    <script is:inline>
+      (() => {
+        const valid = ['pt', 'en'];
+        const param = new URLSearchParams(location.search).get('lang');
+        let stored = null;
+        try {
+          stored = localStorage.getItem('lang');
+          if (valid.includes(param)) localStorage.setItem('lang', param);
+        } catch {}
+        const lang = valid.includes(param) ? param : valid.includes(stored) ? stored : 'en';
+        document.documentElement.dataset.lang = lang;
+        document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+      })();
+    </script>
+
     <!-- First touch of the visit (utm_source or external referrer), sent with the contact form -->
     <script is:inline>
       try {

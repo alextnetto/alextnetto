@@ -1,6 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import LangSwitch from '../components/LangSwitch.astro';
 import ContactForm from '../components/ContactForm.astro';
 
 const langs = ['pt', 'en'] as const;
@@ -48,11 +47,9 @@ const copy = {
 ---
 
 <Base title="Contact Alex Netto" description="Talks, advisor in technology and AI, and AI agents in your company. Contact form in Portuguese or English.">
-  <LangSwitch>
-    <h1>
-      {langs.map((lang) => <span data-lang-block={lang}>{copy[lang].heading}</span>)}
-    </h1>
-  </LangSwitch>
+  <h1>
+    {langs.map((lang) => <span data-lang-block={lang}>{copy[lang].heading}</span>)}
+  </h1>
 
   {langs.map((lang) => (
     <div data-lang-block={lang} lang={copy[lang].htmlLang}>
