@@ -352,10 +352,10 @@ abbr[title] {
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  animation: hero-photo 18s infinite;
+  animation: hero-photo 36s infinite;
 }
 
-/* 18 s loop: each photo holds about 5 s, with a 1 s crossfade into the next. */
+/* 36 s loop over 6 photos: each holds about 5 s, with a 1 s crossfade into the next. */
 .hero-photos img:nth-child(1) {
   animation-delay: -1s;
 }
@@ -368,11 +368,23 @@ abbr[title] {
   animation-delay: 11s;
 }
 
+.hero-photos img:nth-child(4) {
+  animation-delay: 17s;
+}
+
+.hero-photos img:nth-child(5) {
+  animation-delay: 23s;
+}
+
+.hero-photos img:nth-child(6) {
+  animation-delay: 29s;
+}
+
 @keyframes hero-photo {
   0% { opacity: 0; }
-  5.56% { opacity: 1; }
-  33.33% { opacity: 1; }
-  38.89% { opacity: 0; }
+  2.78% { opacity: 1; }
+  16.67% { opacity: 1; }
+  19.44% { opacity: 0; }
   100% { opacity: 0; }
 }
 
