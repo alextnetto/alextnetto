@@ -45,10 +45,11 @@ function doPost(e) {
       if (key === 'updatedAt') return now;
       if (key === 'stage' && current[i] === 'Completo') return 'Completo';
       const value = lead[key];
-      if (value === undefined || value === null || value === '') return current[i] === undefined ? '' : current[i];
+      if (value === undefined || value === null || value === '') return keep(current[i]);
       return asText(String(value).slice(0, 5000));
     });
     sheet.getRange(row, 1, 1, COLUMNS.length).setValues([values]);
+    sheet.getRange(row, 2, 1, 2).setNumberFormat('dd/mm/yyyy hh:mm');
     return reply({ ok: true, row: row });
   } finally {
     lock.releaseLock();
@@ -58,6 +59,12 @@ function doPost(e) {
 /** Keeps "+55..." and anything starting with = + - @ as text, never as a formula. */
 function asText(value) {
   return /^[=+\-@]/.test(value) ? "'" + value : value;
+}
+
+/** A kept cell comes back without its leading apostrophe, so text is protected again. */
+function keep(value) {
+  if (value === undefined) return '';
+  return typeof value === 'string' ? asText(value) : value;
 }
 
 function reply(body) {
