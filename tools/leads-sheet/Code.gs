@@ -9,6 +9,8 @@
  * Deploy: Extensions > Apps Script, paste this file, Deploy > New deployment >
  * Web app, Execute as: Me, Who has access: Anyone. The web app URL goes in the
  * Vercel variable LEADS_SHEET_URL; treat it as a secret.
+ *
+ * @OnlyCurrentDoc  Limits the script's access to this one spreadsheet.
  */
 
 const SHEET_NAME = 'Leads';
