@@ -12,7 +12,6 @@ export const ROLES = [
   { id: 'analista', pt: 'Analista ou especialista', en: 'Analyst or specialist' },
   { id: 'eventos', pt: 'Organizador(a) de eventos', en: 'Event organizer' },
   { id: 'academico', pt: 'Professor(a) ou gestor(a) acadêmico(a)', en: 'Professor or academic leader' },
-  { id: 'consultor', pt: 'Consultor(a) ou agência', en: 'Consultant or agency' },
   { id: 'investidor', pt: 'Investidor(a)', en: 'Investor' },
   { id: 'outro', pt: 'Outro', en: 'Other' },
 ] as const;
@@ -25,7 +24,6 @@ export const REVENUE_BANDS = [
   { id: '50m_100m', pt: 'R$ 50 a 100 milhões', en: 'BRL 50 to 100 million' },
   { id: '100m_500m', pt: 'R$ 100 a 500 milhões', en: 'BRL 100 to 500 million' },
   { id: '500m_mais', pt: 'Acima de R$ 500 milhões', en: 'Above BRL 500 million' },
-  { id: 'nao_informar', pt: 'Prefiro não informar', en: 'Prefer not to say' },
   { id: 'nao_se_aplica', pt: 'Não se aplica (evento, universidade)', en: 'Not applicable (event, university)' },
 ] as const;
 

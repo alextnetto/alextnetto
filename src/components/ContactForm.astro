@@ -30,13 +30,9 @@ const fields = {
   linkedin: { pt: 'LinkedIn', en: 'LinkedIn' },
   optional: { pt: '(opcional)', en: '(optional)' },
   message: { pt: 'Conte em poucas linhas', en: 'Tell me in a few lines' },
-  consent: {
-    pt: 'Concordo que meus dados fiquem no CRM que eu e meu time usamos, só para responder a este pedido.',
-    en: 'I agree that my details are kept in the CRM my team uses, only to reply to this request.',
-  },
   saved: {
-    pt: 'Quando você informa o e-mail ou o WhatsApp, o que estiver preenchido fica salvo, mesmo antes de enviar, só para eu poder responder.',
-    en: 'Once you add your e-mail or WhatsApp, what you have filled in is saved, even before you send it, only so I can reply.',
+    pt: 'Seus dados ficam no CRM que eu e meu time usamos, só para responder a este pedido. A partir do e-mail ou do WhatsApp, o que estiver preenchido fica salvo, mesmo antes de enviar.',
+    en: 'Your details are kept in the CRM my team uses, only to reply to this request. Once you add your e-mail or WhatsApp, what you have filled in is saved, even before you send it.',
   },
   send: { pt: 'Enviar', en: 'Send' },
   doneTitle: { pt: 'Recebido. Obrigado,', en: 'Received. Thank you,' },
@@ -67,11 +63,11 @@ const fields = {
     <div class="field-row">
       <div class="field">
         <label class="field-label" for="cf-name"><Bi {...fields.name} /></label>
-        <input id="cf-name" name="name" autocomplete="name" required maxlength="120" placeholder="Ex.: Maria Souza" />
+        <input id="cf-name" name="name" autocomplete="name" required maxlength="120" placeholder="Ex.: Ricardo Albuquerque" />
       </div>
       <div class="field">
         <label class="field-label" for="cf-email"><Bi {...fields.email} /></label>
-        <input id="cf-email" name="email" type="email" autocomplete="email" required maxlength="200" placeholder="voce@empresa.com.br" aria-describedby="cf-email-hint" />
+        <input id="cf-email" name="email" type="email" autocomplete="email" required maxlength="200" placeholder="ricardo.albuquerque@grupoexemplo.com.br" aria-describedby="cf-email-hint" />
         <p class="field-hint" id="cf-email-hint" hidden></p>
       </div>
     </div>
@@ -95,14 +91,14 @@ const fields = {
           <option value="" disabled selected data-pt="Selecione" data-en="Select">Selecione</option>
           {ROLES.map((role) => <option value={role.id} data-pt={role.pt} data-en={role.en}>{role.pt}</option>)}
         </select>
-        <input name="roleOther" class="role-other" maxlength="80" aria-label="Qual é o seu cargo? / What is your role?" placeholder="Ex.: Head de inovação" hidden />
+        <input name="roleOther" class="role-other" maxlength="80" aria-label="Qual é o seu cargo? / What is your role?" placeholder="Ex.: Head de Transformação Digital" hidden />
       </div>
     </div>
 
     <div class="field-row">
       <div class="field">
         <label class="field-label" for="cf-company"><Bi {...fields.company} /></label>
-        <input id="cf-company" name="company" autocomplete="organization" required maxlength="200" placeholder="Ex.: Distribuidora Sul ou Congresso X" aria-describedby="cf-company-hint" />
+        <input id="cf-company" name="company" autocomplete="organization" required maxlength="200" placeholder="Ex.: Grupo Exemplo S.A. ou Fórum Nacional de CFOs" aria-describedby="cf-company-hint" />
         <p class="field-hint" id="cf-company-hint" hidden></p>
       </div>
       <div class="field">
@@ -127,11 +123,6 @@ const fields = {
 
     <label class="hp" aria-hidden="true">
       Website <input name="website" tabindex="-1" autocomplete="off" />
-    </label>
-
-    <label class="consent">
-      <input type="checkbox" name="consent" required />
-      <span><Bi {...fields.consent} /></span>
     </label>
 
     <div class="form-foot">
@@ -161,23 +152,23 @@ const fields = {
 
   const MESSAGE_PLACEHOLDERS: Record<Lang, Record<string, string>> = {
     pt: {
-      palestra: 'Ex.: evento para 200 gestores de varejo em São Paulo, em março, 40 minutos.',
-      advisor: 'Ex.: sou CEO de uma distribuidora e quero alguém de tecnologia ao meu lado para decidir onde usar IA.',
-      empresa: 'Ex.: o time comercial gasta 3 horas por dia montando propostas no ERP.',
+      palestra: 'Ex.: encontro anual de lideranças com 300 diretores em São Paulo, em março, 45 minutos.',
+      advisor: 'Ex.: sou CFO de um grupo com R$ 800 milhões de faturamento e preciso definir com o conselho onde a IA entra na estratégia.',
+      empresa: 'Ex.: o backoffice financeiro concilia 40 mil notas por mês à mão entre o SAP e os bancos.',
     },
     en: {
-      palestra: 'E.g.: a conference for 200 retail managers in March, 40 minutes.',
-      advisor: 'E.g.: I run a distribution company and want someone technical at my side to decide where to use AI.',
-      empresa: 'E.g.: our sales team spends 3 hours a day putting proposals together in the ERP.',
+      palestra: 'E.g.: our annual leadership meeting with 300 directors in São Paulo, in March, 45 minutes.',
+      advisor: 'E.g.: I am the CFO of a group with BRL 800 million in revenue and need to define with the board where AI fits our strategy.',
+      empresa: 'E.g.: our finance back office reconciles 40,000 invoices a month by hand between SAP and the banks.',
     },
   };
 
   const TEXT = {
     pt: {
-      name: 'Ex.: Maria Souza',
-      email: 'voce@empresa.com.br',
-      company: 'Ex.: Distribuidora Sul ou Congresso X',
-      roleOther: 'Ex.: Head de inovação',
+      name: 'Ex.: Ricardo Albuquerque',
+      email: 'ricardo.albuquerque@grupoexemplo.com.br',
+      company: 'Ex.: Grupo Exemplo S.A. ou Fórum Nacional de CFOs',
+      roleOther: 'Ex.: Head de Transformação Digital',
       linkedin: 'linkedin.com/in/seu-nome',
       example: 'Ex.:',
       didYouMean: 'Você quis dizer',
@@ -185,17 +176,16 @@ const fields = {
       linkedinMoved: 'Passei o link para o campo LinkedIn. Aqui vai o nome da empresa ou do evento.',
       roleOtherRequired: 'Conte qual é o seu cargo.',
       required: 'Preencha os campos obrigatórios.',
-      consent: 'Para enviar, marque a caixa de consentimento.',
       sending: 'Enviando…',
       failed: 'Não consegui enviar agora. Tente de novo em alguns minutos ou me chame no Telegram (@alextnetto).',
       offline: 'Sem conexão. Tente de novo em alguns minutos ou me chame no Telegram (@alextnetto).',
       invalid: 'Confira os campos e tente de novo.',
     },
     en: {
-      name: 'E.g.: Maria Souza',
-      email: 'you@company.com',
-      company: 'E.g.: Acme Inc. or Event X',
-      roleOther: 'E.g.: Head of innovation',
+      name: 'E.g.: Ricardo Albuquerque',
+      email: 'ricardo.albuquerque@examplegroup.com',
+      company: 'E.g.: Example Group or the National CFO Forum',
+      roleOther: 'E.g.: Head of Digital Transformation',
       linkedin: 'linkedin.com/in/your-name',
       example: 'E.g.:',
       didYouMean: 'Did you mean',
@@ -203,7 +193,6 @@ const fields = {
       linkedinMoved: 'I moved the link to the LinkedIn field. Put the company or event name here.',
       roleOtherRequired: 'Tell me your role.',
       required: 'Please fill in the required fields.',
-      consent: 'To send, please tick the consent box.',
       sending: 'Sending…',
       failed: 'I could not send it right now. Try again in a few minutes or reach me on Telegram (@alextnetto).',
       offline: 'No connection. Try again in a few minutes or reach me on Telegram (@alextnetto).',
@@ -517,7 +506,7 @@ const fields = {
       (el) => !el.hidden && !el.checkValidity()
     );
     if (invalid) {
-      showError(invalid.type === 'checkbox' ? text.consent : invalid.validity.customError ? invalid.validationMessage : text.required);
+      showError(invalid.validity.customError ? invalid.validationMessage : text.required);
       invalid.focus();
       return;
     }
@@ -530,7 +519,6 @@ const fields = {
       ...snapshot(),
       stage: 'complete',
       ref: stored.ref,
-      consent: (form.elements.namedItem('consent') as HTMLInputElement).checked,
       startedAt,
     };
     try {

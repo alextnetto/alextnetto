@@ -23,7 +23,6 @@ const completeBody = {
   lang: 'pt',
   origin: 'instagram',
   page: '/links',
-  consent: true,
   website: '',
   startedAt: NOW - 30_000,
 };
@@ -124,9 +123,13 @@ describe('parseLead', () => {
     ['missing revenue', { revenue: '' }],
     ['LinkedIn', { linkedin: 'facebook.com/maria' }],
     ['message', { message: 'oi' }],
-    ['consent', { consent: false }],
+    ['revenue band no longer offered', { revenue: 'nao_informar' }],
   ])('rejects a complete submission with a bad %s', (_field, patch) => {
     expect(parseLead({ ...completeBody, ...patch }, NOW).status).toBe('invalid');
+  });
+
+  it('needs no consent box', () => {
+    expect(parseLead({ ...completeBody, consent: undefined }, NOW).status).toBe('ok');
   });
 
   it('reads the number with the country the person chose', () => {

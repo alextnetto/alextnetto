@@ -145,10 +145,9 @@ export function parseLead(body: unknown, now = Date.now()): ParseResult {
     if (!role) return invalid('Escolha o seu cargo.');
     if (role === 'outro' && roleOther.length < 2) return invalid('Conte qual é o seu cargo.');
     if (company.length < 2) return invalid('Informe o nome da empresa ou do evento.');
-    if (!revenue) return invalid('Escolha a faixa de faturamento (ou "Prefiro não informar").');
+    if (!revenue) return invalid('Escolha a faixa de faturamento anual.');
     if (typedLinkedin && !linkedin) return invalid('Confira o link do LinkedIn, por exemplo linkedin.com/in/seu-nome.');
     if (message.length < 5) return invalid('Conte em poucas linhas o que você precisa.');
-    if (b.consent !== true) return invalid('Para enviar, marque a caixa de consentimento.');
   } else if (!whatsapp && !email) {
     return invalid('Informe um e-mail ou WhatsApp.');
   }
