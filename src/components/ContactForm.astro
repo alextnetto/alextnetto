@@ -1,0 +1,342 @@
+---
+// Contact form shared by /contact and /links. Saves partial leads (see src/lib/lead.ts),
+// records the page it sits on, and lets links with data-kind preselect an option.
+import type { LeadKind } from '../lib/lead';
+
+const langs = ['pt', 'en'] as const;
+type Lang = (typeof langs)[number];
+
+const kinds: { kind: LeadKind; label: Record<Lang, string> }[] = [
+  { kind: 'palestra', label: { pt: 'Palestra', en: 'A talk' } },
+  { kind: 'advisor', label: { pt: 'Advisor em tecnologia e IA', en: 'An advisor in technology and AI' } },
+  { kind: 'empresa', label: { pt: 'IA na minha empresa', en: 'AI in my company' } },
+];
+
+const fields = {
+  legend: { pt: 'O que você procura', en: 'What are you looking for' },
+  name: { pt: 'Nome', en: 'Name' },
+  email: { pt: 'E-mail', en: 'Email' },
+  whatsapp: { pt: 'WhatsApp com DDD', en: 'WhatsApp, with country code' },
+  company: { pt: 'Empresa, evento ou LinkedIn', en: 'Company, event or LinkedIn' },
+  message: { pt: 'Conte em poucas linhas', en: 'Tell me in a few lines' },
+  consent: {
+    pt: 'Concordo que meus dados fiquem no CRM que eu e meu time usamos, só para responder a este pedido.',
+    en: 'I agree that my details are kept in the CRM my team uses, only to reply to this request.',
+  },
+  saved: {
+    pt: 'Quando você informa o e-mail ou o WhatsApp, o que estiver preenchido fica salvo, mesmo antes de enviar, só para eu poder responder.',
+    en: 'Once you add your e-mail or WhatsApp, what you have filled in is saved, even before you send it, only so I can reply.',
+  },
+  send: { pt: 'Enviar', en: 'Send' },
+  doneTitle: { pt: 'Recebido. Obrigado,', en: 'Received. Thank you,' },
+  doneBody: {
+    pt: 'Vou ler a sua mensagem. Se houver encaixe, eu ou alguém do meu time responde pelo WhatsApp ou por e-mail.',
+    en: 'I will read your message. If there is a fit, I or someone on my team will reply by WhatsApp or email.',
+  },
+} as const;
+---
+
+<div id="contato">
+  <form class="contact-form" id="contact-form" novalidate>
+    <p class="form-note">{langs.map((lang) => <span data-lang-block={lang}>{fields.saved[lang]}</span>)}</p>
+
+    <fieldset>
+      <legend>{langs.map((lang) => <span data-lang-block={lang}>{fields.legend[lang]}</span>)}</legend>
+      <div class="kind-options">
+        {kinds.map(({ kind, label }) => (
+          <label>
+            <input type="radio" name="kind" value={kind} required checked={kind === 'advisor'} />
+            <span>{langs.map((lang) => <span data-lang-block={lang}>{label[lang]}</span>)}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <div class="field-row">
+      <label class="field">
+        <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.name[lang]}</span>)}</span>
+        <input name="name" autocomplete="name" required maxlength="120" />
+      </label>
+      <label class="field">
+        <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.email[lang]}</span>)}</span>
+        <input name="email" type="email" autocomplete="email" required maxlength="200" />
+      </label>
+    </div>
+
+    <div class="field-row">
+      <label class="field">
+        <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.whatsapp[lang]}</span>)}</span>
+        <input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" required maxlength="40" />
+      </label>
+      <label class="field">
+        <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.company[lang]}</span>)}</span>
+        <input name="company" autocomplete="organization" required maxlength="200" />
+      </label>
+    </div>
+
+    <label class="field">
+      <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.message[lang]}</span>)}</span>
+      <textarea name="message" rows="4" required maxlength="2000"></textarea>
+    </label>
+
+    <label class="hp" aria-hidden="true">
+      Website <input name="website" tabindex="-1" autocomplete="off" />
+    </label>
+
+    <label class="consent">
+      <input type="checkbox" name="consent" required />
+      <span>{langs.map((lang) => <span data-lang-block={lang}>{fields.consent[lang]}</span>)}</span>
+    </label>
+
+    <div class="form-foot">
+      <button class="form-submit" type="submit">
+        {langs.map((lang) => <span data-lang-block={lang}>{fields.send[lang]}</span>)}
+      </button>
+      <p class="form-status" role="status" aria-live="polite"></p>
+    </div>
+  </form>
+
+  <div class="form-done" id="form-done" hidden tabindex="-1">
+    {langs.map((lang) => (
+      <div data-lang-block={lang} lang={lang === 'pt' ? 'pt-BR' : 'en'}>
+        <p><strong>{fields.doneTitle[lang]} <span data-first-name></span>.</strong></p>
+        <p>{fields.doneBody[lang]}</p>
+      </div>
+    ))}
+  </div>
+</div>
+
+<script>
+  type Lang = 'pt' | 'en';
+
+  const PLACEHOLDERS: Record<Lang, Record<string, string>> = {
+    pt: {
+      palestra: 'Ex.: evento para 200 gestores de varejo em São Paulo, em março, 40 minutos.',
+      advisor: 'Ex.: sou CEO de uma distribuidora e quero alguém de tecnologia ao meu lado para decidir onde usar IA.',
+      empresa: 'Ex.: o time comercial gasta 3 horas por dia montando propostas no ERP.',
+    },
+    en: {
+      palestra: 'E.g.: a conference for 200 retail managers in March, 40 minutes.',
+      advisor: 'E.g.: I run a distribution company and want someone technical at my side to decide where to use AI.',
+      empresa: 'E.g.: our sales team spends 3 hours a day putting proposals together in the ERP.',
+    },
+  };
+
+  const MESSAGES: Record<Lang, Record<string, string>> = {
+    pt: {
+      required: 'Preencha os campos obrigatórios.',
+      consent: 'Para enviar, marque a caixa de consentimento.',
+      sending: 'Enviando…',
+      failed: 'Não consegui enviar agora. Tente de novo em alguns minutos ou me chame no Telegram (@alextnetto).',
+      offline: 'Sem conexão. Tente de novo em alguns minutos ou me chame no Telegram (@alextnetto).',
+    },
+    en: {
+      required: 'Please fill in the required fields.',
+      consent: 'To send, please tick the consent box.',
+      sending: 'Sending…',
+      failed: 'I could not send it right now. Try again in a few minutes or reach me on Telegram (@alextnetto).',
+      offline: 'No connection. Try again in a few minutes or reach me on Telegram (@alextnetto).',
+      invalid: 'Please check the fields and try again.',
+    },
+  };
+
+  // ?type= (English) and ?tipo= (Portuguese) both preselect the option.
+  const KIND_ALIASES: Record<string, string> = {
+    talk: 'palestra',
+    palestra: 'palestra',
+    advisor: 'advisor',
+    mentoria: 'advisor',
+    company: 'empresa',
+    empresa: 'empresa',
+  };
+
+  const root = document.documentElement;
+  const form = document.querySelector<HTMLFormElement>('#contact-form')!;
+  const done = document.querySelector<HTMLElement>('#form-done')!;
+  const status = form.querySelector<HTMLElement>('.form-status')!;
+  const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const message = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]')!;
+  const startedAt = Date.now();
+
+  // One lead per visit: partial saves and the final submission share this id, and the
+  // ref the server returns, so Trama keeps one card and the sheet one row.
+  const LEAD_KEY = 'contact-lead';
+  type Stored = { leadId: string; ref?: { taskId: string } };
+  let stored: Stored = (() => {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(LEAD_KEY) ?? 'null');
+      if (saved?.leadId) return saved;
+    } catch {}
+    return { leadId: crypto.randomUUID() };
+  })();
+  const persist = () => {
+    try {
+      sessionStorage.setItem(LEAD_KEY, JSON.stringify(stored));
+    } catch {}
+  };
+  persist();
+
+  // First touch of the visit, recorded by the layout (utm_source or external referrer).
+  const origin = (() => {
+    try {
+      return sessionStorage.getItem('first-touch') ?? '';
+    } catch {
+      return '';
+    }
+  })();
+
+  const lang = (): Lang => (root.dataset.lang === 'en' ? 'en' : 'pt');
+  const currentKind = () => form.querySelector<HTMLInputElement>('input[name="kind"]:checked')?.value ?? 'advisor';
+  const syncPlaceholder = () => {
+    message.placeholder = PLACEHOLDERS[lang()][currentKind()] ?? '';
+  };
+
+  const params = new URLSearchParams(location.search);
+  const preset = KIND_ALIASES[params.get('type') ?? params.get('tipo') ?? ''];
+  const radio = preset && form.querySelector<HTMLInputElement>(`input[name="kind"][value="${preset}"]`);
+  if (radio) radio.checked = true;
+  syncPlaceholder();
+
+  form.addEventListener('change', (event) => {
+    if ((event.target as HTMLInputElement).name === 'kind') syncPlaceholder();
+  });
+
+  // Links on the same page (e.g. /links) pick the option and scroll to the form.
+  document.querySelectorAll<HTMLAnchorElement>('a[data-kind]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const option = form.querySelector<HTMLInputElement>(`input[name="kind"][value="${link.dataset.kind}"]`);
+      if (!option) return;
+      event.preventDefault();
+      option.checked = true;
+      syncPlaceholder();
+      document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+  new MutationObserver(syncPlaceholder).observe(root, { attributes: true, attributeFilter: ['data-lang'] });
+
+  // Umami custom events (the script only loads when PUBLIC_UMAMI_WEBSITE_ID is set).
+  const track = (event: string, data: Record<string, string | number>) =>
+    (window as { umami?: { track: (e: string, d: object) => void } }).umami?.track(event, data);
+
+  const snapshot = () => {
+    const data = new FormData(form);
+    return {
+      leadId: stored.leadId,
+      kind: String(data.get('kind') ?? ''),
+      name: String(data.get('name') ?? ''),
+      email: String(data.get('email') ?? ''),
+      whatsapp: String(data.get('whatsapp') ?? ''),
+      company: String(data.get('company') ?? ''),
+      message: String(data.get('message') ?? ''),
+      website: String(data.get('website') ?? ''),
+      lang: lang(),
+      origin,
+      page: location.pathname,
+    };
+  };
+  const hasContact = (s: ReturnType<typeof snapshot>) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.email.trim()) || s.whatsapp.replace(/\D/g, '').length >= 10;
+
+  // Saves run one at a time; the submit waits for the last one.
+  let saving: Promise<void> = Promise.resolve();
+  let lastSaved = '';
+  let completed = false;
+  const savePartial = () => {
+    saving = saving.then(async () => {
+      const current = snapshot();
+      const key = JSON.stringify(current);
+      if (completed || !hasContact(current) || key === lastSaved) return;
+      try {
+        const res = await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...current, stage: 'partial', ref: stored.ref, startedAt }),
+          keepalive: true,
+        });
+        if (!res.ok) return;
+        if (!lastSaved) track('form-contato-parcial', { tipo: current.kind, lang: current.lang });
+        lastSaved = key;
+        const body = await res.json().catch(() => ({}));
+        if (body.ref?.taskId) {
+          stored = { ...stored, ref: body.ref };
+          persist();
+        }
+      } catch {}
+    });
+    return saving;
+  };
+
+  let idle: number | undefined;
+  form.addEventListener('input', () => {
+    clearTimeout(idle);
+    idle = window.setTimeout(savePartial, 2000);
+  });
+  form.addEventListener('change', () => {
+    clearTimeout(idle);
+    savePartial();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') savePartial();
+  });
+
+  const showError = (text: string) => {
+    status.textContent = text;
+    status.classList.add('is-error');
+  };
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    status.textContent = '';
+    status.classList.remove('is-error');
+    const m = MESSAGES[lang()];
+
+    const invalid = Array.from(form.querySelectorAll<HTMLInputElement>('input, textarea')).find(
+      (el) => !el.checkValidity()
+    );
+    if (invalid) {
+      showError(invalid.type === 'checkbox' ? m.consent : m.required);
+      invalid.focus();
+      return;
+    }
+
+    clearTimeout(idle);
+    submit.disabled = true;
+    status.textContent = m.sending;
+    await saving;
+    const payload = {
+      ...snapshot(),
+      stage: 'complete',
+      ref: stored.ref,
+      consent: (form.elements.namedItem('consent') as HTMLInputElement).checked,
+      startedAt,
+    };
+    try {
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok) {
+        completed = true;
+        try {
+          sessionStorage.removeItem(LEAD_KEY);
+        } catch {}
+        track('form-contato-enviado', { tipo: String(payload.kind), lang: lang() });
+        const firstName = String(payload.name ?? '').trim().split(/\s+/)[0];
+        done.querySelectorAll('[data-first-name]').forEach((el) => (el.textContent = firstName));
+        form.hidden = true;
+        done.hidden = false;
+        done.focus();
+        return;
+      }
+      track('form-contato-erro', { tipo: String(payload.kind), status: res.status });
+      // Server validation messages are written in Portuguese.
+      if (res.status === 400) showError(lang() === 'pt' && body.error ? body.error : m.invalid ?? m.required);
+      else showError(m.failed);
+    } catch {
+      showError(m.offline);
+    }
+    submit.disabled = false;
+  });
+</script>

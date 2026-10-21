@@ -1,12 +1,12 @@
 # Leads sheet
 
-The contact form (`/contact`) sends every lead to two places: a deal in the Trama CRM board `fator` and a row in the Google Sheet "Leads alexnet.to" (tab `Leads`). The sheet is the backup: it keeps the lead even when Trama is down.
+The contact form (on `/contact` and `/links`) sends every lead to two places: a card in the Trama funnel `alexnet.to` (tasks.fator.ai/blockful/alexnet-to) and a row in the Google Sheet "Leads alexnet.to" (tab `Leads`). The sheet is the backup: it keeps the lead even when Trama is down.
 
 `Code.gs` is the Apps Script web app that writes the row. It keeps one row per `Lead ID`, so the final submission updates the row of an earlier partial save.
 
 ## Columns
 
-Lead ID, Criado em, Atualizado em, Formulário (Parcial or Completo), Interesse, Nome, E-mail, WhatsApp, Empresa, evento ou LinkedIn, Mensagem, Idioma, Origem, Trama (link to the deal).
+Lead ID, Criado em, Atualizado em, Formulário (Parcial or Completo), Interesse, Nome, E-mail, WhatsApp, Empresa, evento ou LinkedIn, Mensagem, Idioma, Origem, Página, Trama (link to the card).
 
 ## Deploy
 

@@ -1,5 +1,5 @@
 /**
- * Receives contact-form leads from alexnet.to (POST JSON from /api/lead) and writes
+ * Receives contact-form leads from alexnet.to (/contact and /links, via /api/lead) and writes
  * them to the "Leads" tab of the "Leads alexnet.to" sheet.
  *
  * One row per leadId: the final submission updates the row of an earlier partial
@@ -14,7 +14,7 @@
 const SHEET_NAME = 'Leads';
 const COLUMNS = [
   'leadId', 'createdAt', 'updatedAt', 'stage', 'kind', 'name', 'email',
-  'whatsapp', 'company', 'message', 'lang', 'origin', 'trama',
+  'whatsapp', 'company', 'message', 'lang', 'origin', 'page', 'trama',
 ];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

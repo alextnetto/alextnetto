@@ -1,9 +1,9 @@
 /**
- * Contact form (/contact) → Trama CRM deal + Google Sheet row.
+ * Contact form (/contact and /links) → card in the Trama funnel "alexnet.to" + Google Sheet row.
  *
  * The form saves twice: a partial save as soon as the visitor leaves a valid
  * e-mail or WhatsApp, and the complete submission. Both carry the same leadId,
- * so Trama keeps one deal and the sheet keeps one row per lead. Every network
+ * so Trama keeps one card and the sheet keeps one row per lead. Every network
  * call takes an injected `fetch` so the flow is testable without the real CRM.
  */
 
@@ -19,18 +19,25 @@ export const KIND_LABEL: Record<LeadKind, string> = {
 export type LeadStage = 'partial' | 'complete';
 const STAGE_LABEL: Record<LeadStage, string> = { partial: 'Parcial', complete: 'Completo' };
 
-/** CRM board "fator" in the Fator workspace: stage Qualificação, owner Alex. */
+/**
+ * Board "alexnet.to" (ALX) in the Fator workspace, owner Alex. A tasks board, not a CRM
+ * board: creating a CRM board would create the workspace's shared contact lists before
+ * the Pipedrive import, which does not merge pre-existing lists.
+ */
 export const TRAMA = {
   url: 'https://tasks.fator.ai',
-  boardId: '4b83e35a-4d6b-45c0-bb6b-e8626b662362',
-  boardPath: 'blockful/fator',
-  stageId: '3bf587be-dcd6-4724-9473-9c8c58a39eda',
+  boardId: '99f62b0c-bad8-4482-91a5-a8ffab0e0b55',
+  boardPath: 'blockful/alexnet-to',
+  status: {
+    partial: '3112a6b2-0384-4c88-ab89-15572651e958', // Formulário incompleto
+    complete: '8496f426-4070-4e53-9d53-a9b04e0fb435', // Novo
+  },
   ownerId: 'dd8af093-f5cd-4751-b75b-c9f6eb461a18',
 } as const;
 
-/** What the browser keeps between saves. Trusted only after the deal's lead_id matches. */
+/** What the browser keeps between saves. Trusted only after the card's lead_id matches. */
 export interface TramaRef {
-  dealId: string;
+  taskId: string;
 }
 
 export interface Lead {
@@ -45,8 +52,10 @@ export interface Lead {
   company?: string;
   message?: string;
   lang?: 'pt' | 'en';
-  /** utm_source or referrer, as computed by the form. */
+  /** First touch of the visit (utm_source or referrer, plus landing path). */
   origin?: string;
+  /** Page that holds the form: /contact or /links. */
+  page?: string;
   ref?: TramaRef;
 }
 
@@ -86,8 +95,8 @@ function normalizeWhatsapp(raw: string): string | null {
 
 function parseRef(value: unknown): TramaRef | undefined {
   if (!value || typeof value !== 'object') return undefined;
-  const dealId = (value as Record<string, unknown>).dealId;
-  return typeof dealId === 'string' && UUID.test(dealId) ? { dealId } : undefined;
+  const taskId = (value as Record<string, unknown>).taskId;
+  return typeof taskId === 'string' && UUID.test(taskId) ? { taskId } : undefined;
 }
 
 const invalid = (error: string): ParseResult => ({ status: 'invalid', error });
@@ -137,53 +146,41 @@ export function parseLead(body: unknown, now = Date.now()): ParseResult {
     message,
     lang: b.lang === 'pt' || b.lang === 'en' ? b.lang : undefined,
     origin: text(b.origin, 300),
+    page: /^\/[a-z0-9/_-]*$/i.test(text(b.page, 100)) ? text(b.page, 100) : undefined,
     ref: parseRef(b.ref),
   }) as Lead;
   return { status: 'ok', lead };
 }
 
 const isLinkedin = (value?: string) => !!value && /linkedin\.com\//i.test(value);
-const sameText = (a?: string | null, b?: string | null) =>
-  !!a && !!b && a.trim().toLowerCase() === b.trim().toLowerCase();
 
-function noteText(lead: Lead): string {
+/** Card description: everything the person wrote, in reading order. */
+function describe(lead: Lead): string {
   const lines: [string, string | undefined][] = [
     ['Procura', KIND_LABEL[lead.kind]],
     ['Nome', lead.name],
     ['WhatsApp', lead.whatsapp],
     ['E-mail', lead.email],
     ['Empresa, evento ou LinkedIn', lead.company],
-    ['Idioma', lead.lang],
-    ['Origem', lead.origin],
   ];
   return [
-    'Formulário do alexnet.to',
-    ...lines.filter(([, value]) => value).map(([key, value]) => `${key}: ${value}`),
+    ...lines.filter(([, value]) => value).map(([key, value]) => `**${key}:** ${value}`),
     '',
     lead.message ?? '',
   ]
     .join('\n')
     .trim()
-    .slice(0, 5000);
+    .slice(0, 20_000);
 }
 
-interface Deal {
+interface Card {
   id: string;
   number: number;
-  contactId: string | null;
-  organizationId: string | null;
+  statusId: string;
   customFields?: Record<string, unknown>;
 }
 
-interface Party {
-  id: string;
-  name?: string;
-  email?: string | null;
-  phone?: string | null;
-  organizationId?: string | null;
-}
-
-/** Creates or updates contact, organization and deal; returns the ref for the next save. */
+/** Creates or updates the lead's card; returns the ref for the next save. */
 export async function saveToTrama(
   lead: Lead,
   env: LeadEnv,
@@ -193,104 +190,56 @@ export async function saveToTrama(
   if (!key) throw new Error('Trama não configurado (TRAMA_API_KEY).');
   const base = (env.TRAMA_URL || TRAMA.url).replace(/\/+$/, '');
 
-  const call = async (
-    step: string,
-    method: 'GET' | 'POST' | 'PATCH',
-    path: string,
-    { query, body }: { query?: Record<string, string>; body?: unknown } = {}
-  ) => {
-    const url = new URL(`${base}/v1${path}`);
-    for (const [name, value] of Object.entries(query ?? {})) url.searchParams.set(name, value);
-    const res = await fetchFn(url, {
+  const call = async (step: string, method: 'GET' | 'POST' | 'PATCH', path: string, body?: unknown) => {
+    const res = await fetchFn(`${base}/v1/boards/${TRAMA.boardId}/tasks${path}`, {
       method,
       headers: { Authorization: `Bearer ${key}`, ...(body ? { 'Content-Type': 'application/json' } : {}) },
       body: body ? JSON.stringify(body) : undefined,
     });
     const json = await res.json().catch(() => null);
     if (!res.ok) throw new Error(`Trama falhou em ${step} (HTTP ${res.status}).`);
-    return json;
+    return json as Card;
   };
-  const deals = `/boards/${TRAMA.boardId}/deals`;
+  const result = (card: Card) => ({ ref: { taskId: card.id }, url: `${base}/${TRAMA.boardPath}/${card.number}` });
 
-  // A ref from the browser counts only when its deal carries this leadId.
-  let existing: Deal | null = null;
+  // A ref from the browser counts only when its card carries this leadId.
+  let existing: Card | null = null;
   if (lead.ref) {
-    const found: Deal | null = await call('leitura do deal', 'GET', `${deals}/${lead.ref.dealId}`).catch(() => null);
+    const found = await call('leitura do card', 'GET', `/${lead.ref.taskId}`).catch(() => null);
     if (found?.customFields?.lead_id === lead.leadId) existing = found;
   }
 
-  const linkedin = isLinkedin(lead.company);
-  let organizationId = existing?.organizationId ?? undefined;
-  if (lead.company && !linkedin) {
-    const { data } = await call('busca de organização', 'GET', '/crm/organizations', {
-      query: { q: lead.company, limit: '20' },
-    });
-    const match = (data as Party[] | undefined)?.find((org) => sameText(org.name, lead.company));
-    organizationId =
-      match?.id ??
-      (await call('criação de organização', 'POST', '/crm/organizations', { body: { name: lead.company } })).id;
-  }
+  // Once Alex moves the card or the form is sent, late partial saves change nothing.
+  const stillPartial = existing?.statusId === TRAMA.status.partial;
+  if (existing && lead.stage === 'partial' && !stillPartial) return result(existing);
 
-  let contactId = existing?.contactId ?? undefined;
-  let contactHasOrganization = false;
-  if (!contactId) {
-    for (const q of [lead.email, lead.whatsapp].filter((value): value is string => !!value)) {
-      const { data } = await call('busca de contato', 'GET', '/crm/contacts', { query: { q, limit: '20' } });
-      const match = (data as Party[] | undefined)?.find(
-        (contact) => sameText(contact.email, lead.email) || (!!lead.whatsapp && contact.phone === lead.whatsapp)
-      );
-      if (match) {
-        contactId = match.id;
-        contactHasOrganization = !!match.organizationId;
-        break;
-      }
-    }
-  }
-  const contactFields = compact({ name: lead.name, email: lead.email, phone: lead.whatsapp });
-  const linkOrganization = organizationId && !contactHasOrganization ? { organizationId } : {};
-  if (!contactId) {
-    const created = await call('criação de contato', 'POST', '/crm/contacts', {
-      body: { ...contactFields, name: lead.name || lead.email || lead.whatsapp, ...linkOrganization },
-    });
-    contactId = created.id as string;
-  } else {
-    const patch = { ...contactFields, ...linkOrganization };
-    if (Object.keys(patch).length) {
-      await call('atualização de contato', 'PATCH', `/crm/contacts/${contactId}`, { body: patch });
-    }
-  }
-
-  const completed = lead.stage === 'complete' || existing?.customFields?.formulario === 'completo';
-  const customFields = {
-    origem: 'alexnet.to',
-    interesse: lead.kind,
-    formulario: completed ? 'completo' : 'parcial',
-    lead_id: lead.leadId,
+  const who = lead.company && !isLinkedin(lead.company) ? lead.company : lead.name || lead.email || lead.whatsapp;
+  const fields = {
+    title: `${who}: ${KIND_LABEL[lead.kind]}`.slice(0, 500),
+    description: describe(lead),
+    customFields: compact({
+      interesse: lead.kind,
+      email: lead.email,
+      whatsapp: lead.whatsapp,
+      empresa: lead.company,
+      origem: lead.origin,
+      pagina: lead.page,
+      idioma: lead.lang,
+      lead_id: lead.leadId,
+    }),
   };
-  const who = lead.company && !linkedin ? lead.company : lead.name || lead.email || lead.whatsapp;
-  const title = `${who}: ${KIND_LABEL[lead.kind]} (alexnet.to)`.slice(0, 200);
-  const deal: Deal = existing
-    ? await call('atualização do deal', 'PATCH', `${deals}/${existing.id}`, {
-        body: { title, contactId, organizationId, customFields },
+
+  const card = existing
+    ? await call('atualização do card', 'PATCH', `/${existing.id}`, {
+        ...fields,
+        ...(lead.stage === 'complete' && stillPartial ? { statusId: TRAMA.status.complete } : {}),
       })
-    : await call('criação do deal', 'POST', deals, {
-        body: {
-          title,
-          stageId: TRAMA.stageId,
-          currency: 'BRL',
-          ownerId: TRAMA.ownerId,
-          contactId,
-          organizationId,
-          customFields,
-        },
+    : await call('criação do card', 'POST', '', {
+        ...fields,
+        statusId: TRAMA.status[lead.stage],
+        assigneeId: TRAMA.ownerId,
       });
-
-  // The note keeps everything the person wrote, once, when the form is sent.
-  if (lead.stage === 'complete') {
-    await call('criação da nota', 'POST', `${deals}/${deal.id}/notes`, { body: { body: noteText(lead) } });
-  }
-
-  return { ref: { dealId: deal.id }, url: `${base}/${TRAMA.boardPath}/${deal.number ?? existing?.number}` };
+  return result(card);
 }
 
 /** One row per leadId; the script updates the row of an earlier partial save. */
@@ -315,6 +264,7 @@ export async function saveToSheet(
       message: lead.message,
       lang: lead.lang,
       origin: lead.origin,
+      page: lead.page,
     }),
     trama: tramaUrl,
   };
@@ -330,7 +280,7 @@ export async function saveToSheet(
 
 const errorMessage = (e: unknown) => (e instanceof Error ? e.message : String(e));
 
-/** Trama first (so the sheet row links the deal), then the sheet. Either one is enough. */
+/** Trama first (so the sheet row links the card), then the sheet. Either one is enough. */
 export async function submitLead(lead: Lead, env: LeadEnv, fetchFn: typeof fetch = fetch) {
   const trama = await saveToTrama(lead, env, fetchFn).then(
     (result) => ({ ok: true as const, ...result }),
