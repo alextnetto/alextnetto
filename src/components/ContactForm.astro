@@ -1,0 +1,553 @@
+---
+// Contact form shared by /contact and /links. Saves partial leads (see src/lib/lead.ts),
+// records the page it sits on, and lets links with data-kind preselect an option.
+// Phone numbers use the same library as Trama (src/lib/phone.ts), loaded only when needed.
+import type { LeadKind } from '../lib/lead';
+import Bi from './Bi.astro';
+import { REVENUE_BANDS, ROLES } from '../lib/leadOptions';
+import { phoneCountries, phoneExample } from '../lib/phone';
+
+const langs = ['pt', 'en'] as const;
+type Lang = (typeof langs)[number];
+
+const kinds: { kind: LeadKind; label: Record<Lang, string> }[] = [
+  { kind: 'palestra', label: { pt: 'Palestra', en: 'A talk' } },
+  { kind: 'advisor', label: { pt: 'Advisor em tecnologia e IA', en: 'An advisor in technology and AI' } },
+  { kind: 'empresa', label: { pt: 'IA na minha empresa', en: 'AI in my company' } },
+];
+
+const countries = phoneCountries('pt');
+const brExample = phoneExample('BR');
+
+const fields = {
+  legend: { pt: 'O que você procura', en: 'What are you looking for' },
+  name: { pt: 'Nome', en: 'Name' },
+  email: { pt: 'E-mail', en: 'Email' },
+  whatsapp: { pt: 'WhatsApp', en: 'WhatsApp' },
+  role: { pt: 'Cargo', en: 'Role' },
+  company: { pt: 'Empresa ou evento', en: 'Company or event' },
+  revenue: { pt: 'Faturamento anual da empresa', en: 'Company annual revenue' },
+  linkedin: { pt: 'LinkedIn', en: 'LinkedIn' },
+  optional: { pt: '(opcional)', en: '(optional)' },
+  message: { pt: 'Conte em poucas linhas', en: 'Tell me in a few lines' },
+  saved: {
+    pt: 'Seus dados ficam no CRM que eu e meu time usamos, só para responder a este pedido. A partir do e-mail ou do WhatsApp, o que estiver preenchido fica salvo, mesmo antes de enviar.',
+    en: 'Your details are kept in the CRM my team uses, only to reply to this request. Once you add your e-mail or WhatsApp, what you have filled in is saved, even before you send it.',
+  },
+  send: { pt: 'Enviar', en: 'Send' },
+  doneTitle: { pt: 'Recebido. Obrigado,', en: 'Received. Thank you,' },
+  doneBody: {
+    pt: 'Vou ler a sua mensagem. Se houver encaixe, eu ou alguém do meu time responde pelo WhatsApp ou por e-mail.',
+    en: 'I will read your message. If there is a fit, I or someone on my team will reply by WhatsApp or email.',
+  },
+} as const;
+
+---
+
+<div id="contato">
+  <form class="contact-form" id="contact-form" novalidate>
+    <p class="form-note"><Bi {...fields.saved} /></p>
+
+    <fieldset>
+      <legend><Bi {...fields.legend} /></legend>
+      <div class="kind-options">
+        {kinds.map(({ kind, label: text }) => (
+          <label>
+            <input type="radio" name="kind" value={kind} required checked={kind === 'advisor'} />
+            <span>{langs.map((lang) => <span data-lang-block={lang}>{text[lang]}</span>)}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="cf-name"><Bi {...fields.name} /></label>
+        <input id="cf-name" name="name" autocomplete="name" required maxlength="120" placeholder="Ex.: Ricardo Albuquerque" />
+      </div>
+      <div class="field">
+        <label class="field-label" for="cf-email"><Bi {...fields.email} /></label>
+        <input id="cf-email" name="email" type="email" autocomplete="email" required maxlength="200" placeholder="ricardo.albuquerque@grupoexemplo.com.br" aria-describedby="cf-email-hint" />
+        <p class="field-hint" id="cf-email-hint" hidden></p>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="cf-whatsapp"><Bi {...fields.whatsapp} /></label>
+        <div class="phone-row">
+          <select name="phoneCountry" class="phone-country" aria-label="País do número / Number country" autocomplete="tel-country-code">
+            {countries.map(({ country, name, code, flag }) => (
+              <option value={country} data-flag={flag} data-code={code} selected={country === 'BR'}>{flag} {name} +{code}</option>
+            ))}
+          </select>
+          <input id="cf-whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel-national" required maxlength="40" placeholder={`Ex.: ${brExample}`} aria-describedby="cf-whatsapp-error" />
+        </div>
+        <p class="field-error" id="cf-whatsapp-error" hidden></p>
+      </div>
+      <div class="field">
+        <label class="field-label" for="cf-role"><Bi {...fields.role} /></label>
+        <select id="cf-role" name="role" required>
+          <option value="" disabled selected data-pt="Selecione" data-en="Select">Selecione</option>
+          {ROLES.map((role) => <option value={role.id} data-pt={role.pt} data-en={role.en}>{role.pt}</option>)}
+        </select>
+        <input name="roleOther" class="role-other" maxlength="80" aria-label="Qual é o seu cargo? / What is your role?" placeholder="Ex.: Head de Transformação Digital" hidden />
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="cf-company"><Bi {...fields.company} /></label>
+        <input id="cf-company" name="company" autocomplete="organization" required maxlength="200" placeholder="Ex.: Grupo Exemplo S.A. ou Fórum Nacional de CFOs" aria-describedby="cf-company-hint" />
+        <p class="field-hint" id="cf-company-hint" hidden></p>
+      </div>
+      <div class="field">
+        <label class="field-label" for="cf-revenue"><Bi {...fields.revenue} /></label>
+        <select id="cf-revenue" name="revenue" required>
+          <option value="" disabled selected data-pt="Selecione" data-en="Select">Selecione</option>
+          {REVENUE_BANDS.map((band) => <option value={band.id} data-pt={band.pt} data-en={band.en}>{band.pt}</option>)}
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="cf-linkedin"><Bi {...fields.linkedin} /> <span class="field-optional"><Bi {...fields.optional} /></span></label>
+      <input id="cf-linkedin" name="linkedin" inputmode="url" autocomplete="url" maxlength="300" placeholder="linkedin.com/in/seu-nome" aria-describedby="cf-linkedin-error" />
+      <p class="field-error" id="cf-linkedin-error" hidden></p>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="cf-message"><Bi {...fields.message} /></label>
+      <textarea id="cf-message" name="message" rows="4" required maxlength="2000"></textarea>
+    </div>
+
+    <label class="hp" aria-hidden="true">
+      Website <input name="website" tabindex="-1" autocomplete="off" />
+    </label>
+
+    <div class="form-foot">
+      <button class="form-submit" type="submit"><Bi {...fields.send} /></button>
+      <p class="form-status" role="status" aria-live="polite"></p>
+    </div>
+  </form>
+
+  <div class="form-done" id="form-done" hidden tabindex="-1">
+    {langs.map((lang) => (
+      <div data-lang-block={lang} lang={lang === 'pt' ? 'pt-BR' : 'en'}>
+        <p><strong>{fields.doneTitle[lang]} <span data-first-name></span>.</strong></p>
+        <p>{fields.doneBody[lang]}</p>
+      </div>
+    ))}
+  </div>
+</div>
+
+<script>
+  import { looksLikeLinkedin, normalizeLinkedin, suggestEmail } from '../lib/contact';
+
+  type Lang = 'pt' | 'en';
+
+  // The phone metadata is large: fetched on the first interaction with the number or country.
+  let phoneLib: Promise<typeof import('../lib/phone')> | undefined;
+  const loadPhone = () => (phoneLib ??= import('../lib/phone'));
+
+  const MESSAGE_PLACEHOLDERS: Record<Lang, Record<string, string>> = {
+    pt: {
+      palestra: 'Ex.: encontro anual de lideranças com 300 diretores em São Paulo, em março, 45 minutos.',
+      advisor: 'Ex.: sou CFO de um grupo com R$ 800 milhões de faturamento e preciso definir com o conselho onde a IA entra na estratégia.',
+      empresa: 'Ex.: o backoffice financeiro concilia 40 mil notas por mês à mão entre o SAP e os bancos.',
+    },
+    en: {
+      palestra: 'E.g.: our annual leadership meeting with 300 directors in São Paulo, in March, 45 minutes.',
+      advisor: 'E.g.: I am the CFO of a group with BRL 800 million in revenue and need to define with the board where AI fits our strategy.',
+      empresa: 'E.g.: our finance back office reconciles 40,000 invoices a month by hand between SAP and the banks.',
+    },
+  };
+
+  const TEXT = {
+    pt: {
+      name: 'Ex.: Ricardo Albuquerque',
+      email: 'ricardo.albuquerque@grupoexemplo.com.br',
+      company: 'Ex.: Grupo Exemplo S.A. ou Fórum Nacional de CFOs',
+      roleOther: 'Ex.: Head de Transformação Digital',
+      linkedin: 'linkedin.com/in/seu-nome',
+      example: 'Ex.:',
+      didYouMean: 'Você quis dizer',
+      linkedinError: 'Confira o link. Exemplo: linkedin.com/in/seu-nome',
+      linkedinMoved: 'Passei o link para o campo LinkedIn. Aqui vai o nome da empresa ou do evento.',
+      roleOtherRequired: 'Conte qual é o seu cargo.',
+      required: 'Preencha os campos obrigatórios.',
+      sending: 'Enviando…',
+      failed: 'Não consegui enviar agora. Tente de novo em alguns minutos ou me chame no Telegram (@alextnetto).',
+      offline: 'Sem conexão. Tente de novo em alguns minutos ou me chame no Telegram (@alextnetto).',
+      invalid: 'Confira os campos e tente de novo.',
+    },
+    en: {
+      name: 'E.g.: Ricardo Albuquerque',
+      email: 'ricardo.albuquerque@examplegroup.com',
+      company: 'E.g.: Example Group or the National CFO Forum',
+      roleOther: 'E.g.: Head of Digital Transformation',
+      linkedin: 'linkedin.com/in/your-name',
+      example: 'E.g.:',
+      didYouMean: 'Did you mean',
+      linkedinError: 'Check the link. Example: linkedin.com/in/your-name',
+      linkedinMoved: 'I moved the link to the LinkedIn field. Put the company or event name here.',
+      roleOtherRequired: 'Tell me your role.',
+      required: 'Please fill in the required fields.',
+      sending: 'Sending…',
+      failed: 'I could not send it right now. Try again in a few minutes or reach me on Telegram (@alextnetto).',
+      offline: 'No connection. Try again in a few minutes or reach me on Telegram (@alextnetto).',
+      invalid: 'Please check the fields and try again.',
+    },
+  } as const;
+
+  // ?type= (English) and ?tipo= (Portuguese) both preselect the option.
+  const KIND_ALIASES: Record<string, string> = {
+    talk: 'palestra',
+    palestra: 'palestra',
+    advisor: 'advisor',
+    mentoria: 'advisor',
+    company: 'empresa',
+    empresa: 'empresa',
+  };
+
+  const root = document.documentElement;
+  const form = document.querySelector<HTMLFormElement>('#contact-form')!;
+  const done = document.querySelector<HTMLElement>('#form-done')!;
+  const status = form.querySelector<HTMLElement>('.form-status')!;
+  const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const field = <T extends HTMLElement>(name: string) => form.elements.namedItem(name) as unknown as T;
+  const nameInput = field<HTMLInputElement>('name');
+  const email = field<HTMLInputElement>('email');
+  const emailHint = form.querySelector<HTMLElement>('#cf-email-hint')!;
+  const phone = field<HTMLInputElement>('whatsapp');
+  const country = field<HTMLSelectElement>('phoneCountry');
+  const phoneError = form.querySelector<HTMLElement>('#cf-whatsapp-error')!;
+  const role = field<HTMLSelectElement>('role');
+  const roleOther = field<HTMLInputElement>('roleOther');
+  const company = field<HTMLInputElement>('company');
+  const companyHint = form.querySelector<HTMLElement>('#cf-company-hint')!;
+  const revenue = field<HTMLSelectElement>('revenue');
+  const linkedin = field<HTMLInputElement>('linkedin');
+  const linkedinError = form.querySelector<HTMLElement>('#cf-linkedin-error')!;
+  const message = field<HTMLTextAreaElement>('message');
+  const startedAt = Date.now();
+
+  const lang = (): Lang => (root.dataset.lang === 'en' ? 'en' : 'pt');
+  const t = () => TEXT[lang()];
+
+  const show = (el: HTMLElement, text?: string) => {
+    el.textContent = text ?? '';
+    el.hidden = !text;
+  };
+
+  // One lead per visit: partial saves and the final submission share this id, and the
+  // ref the server returns, so Trama keeps one card and the sheet one row.
+  const LEAD_KEY = 'contact-lead';
+  type Stored = { leadId: string; ref?: { taskId: string } };
+  let stored: Stored = (() => {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(LEAD_KEY) ?? 'null');
+      if (saved?.leadId) return saved;
+    } catch {}
+    return { leadId: crypto.randomUUID() };
+  })();
+  const persist = () => {
+    try {
+      sessionStorage.setItem(LEAD_KEY, JSON.stringify(stored));
+    } catch {}
+  };
+  persist();
+
+  // First touch of the visit, recorded by the layout (utm_source or external referrer).
+  const origin = (() => {
+    try {
+      return sessionStorage.getItem('first-touch') ?? '';
+    } catch {
+      return '';
+    }
+  })();
+
+  // --- Phone: country picker + number, checked with Trama's library -------------------
+  const region = (() => {
+    try {
+      const code = new Intl.Locale(navigator.language).maximize().region;
+      return code && country.querySelector(`option[value="${code}"]`) ? code : undefined;
+    } catch {
+      return undefined;
+    }
+  })();
+  const phoneCheck = async () => {
+    const { formatPhone, normalizePhone, phoneCountry, phoneProblem } = await loadPhone();
+    const raw = phone.value.trim();
+    const detected = phoneCountry(raw);
+    if (detected) country.value = detected;
+    else if (raw && !normalizePhone(raw, country.value)) {
+      // Brazil is the default; a number that only fits the browser's country (or Brazil) moves the picker.
+      const fallback = [region, 'BR'].find((code) => code && code !== country.value && normalizePhone(raw, code));
+      if (fallback) country.value = fallback;
+    }
+    const problem = raw ? phoneProblem(raw, country.value, lang()) : undefined;
+    if (!problem && raw) phone.value = formatPhone(raw, country.value) ?? raw;
+    phone.setCustomValidity(problem ?? '');
+    show(phoneError, problem);
+    return !problem;
+  };
+  const syncPhonePlaceholder = async () => {
+    const { phoneExample } = await loadPhone();
+    const example = phoneExample(country.value);
+    phone.placeholder = example ? `${t().example} ${example}` : '';
+  };
+
+  phone.addEventListener('focus', () => void loadPhone(), { once: true });
+  phone.addEventListener('input', () => {
+    show(phoneError);
+    phone.setCustomValidity('');
+    // A number typed with + (or pasted from wa.me) picks its own country.
+    if (/^\s*(\+|00|.*wa\.me|.*phone=)/i.test(phone.value)) {
+      loadPhone().then(({ phoneCountry }) => {
+        const detected = phoneCountry(phone.value);
+        if (detected && detected !== country.value) country.value = detected;
+      });
+    }
+  });
+  phone.addEventListener('blur', () => void phoneCheck());
+  country.addEventListener('change', () => {
+    syncPhonePlaceholder();
+    if (phone.value.trim()) phoneCheck();
+  });
+
+  // --- E-mail typos, LinkedIn links, company field, role "Other" ------------------------
+  email.addEventListener('blur', () => {
+    const suggestion = suggestEmail(email.value);
+    emailHint.replaceChildren();
+    emailHint.hidden = !suggestion;
+    if (!suggestion) return;
+    const apply = document.createElement('button');
+    apply.type = 'button';
+    apply.textContent = suggestion;
+    apply.addEventListener('click', () => {
+      email.value = suggestion;
+      emailHint.hidden = true;
+      email.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    emailHint.append(`${t().didYouMean} `, apply, '?');
+  });
+
+  const linkedinCheck = () => {
+    const raw = linkedin.value.trim();
+    const normalized = raw ? normalizeLinkedin(raw) : null;
+    if (normalized) linkedin.value = normalized;
+    const problem = raw && !normalized ? t().linkedinError : undefined;
+    linkedin.setCustomValidity(problem ?? '');
+    show(linkedinError, problem);
+  };
+  linkedin.addEventListener('blur', linkedinCheck);
+  linkedin.addEventListener('input', () => {
+    linkedin.setCustomValidity('');
+    show(linkedinError);
+  });
+
+  company.addEventListener('blur', () => {
+    if (!looksLikeLinkedin(company.value)) return show(companyHint);
+    if (!linkedin.value.trim()) linkedin.value = company.value.trim();
+    company.value = '';
+    linkedinCheck();
+    show(companyHint, t().linkedinMoved);
+  });
+
+  const syncRole = () => {
+    const other = role.value === 'outro';
+    roleOther.hidden = !other;
+    roleOther.required = other;
+    if (!other) roleOther.value = '';
+  };
+  role.addEventListener('change', () => {
+    syncRole();
+    if (role.value === 'outro') roleOther.focus();
+  });
+
+  // --- Kind, language and placeholders ----------------------------------------------------
+  const currentKind = () => form.querySelector<HTMLInputElement>('input[name="kind"]:checked')?.value ?? 'advisor';
+  const syncLanguage = () => {
+    const l = lang();
+    const text = t();
+    message.placeholder = MESSAGE_PLACEHOLDERS[l][currentKind()] ?? '';
+    nameInput.placeholder = text.name;
+    email.placeholder = text.email;
+    company.placeholder = text.company;
+    roleOther.placeholder = text.roleOther;
+    linkedin.placeholder = text.linkedin;
+    form.querySelectorAll<HTMLOptionElement>('option[data-pt]').forEach((option) => {
+      option.textContent = option.dataset[l] ?? option.textContent;
+    });
+    const names = new Intl.DisplayNames([l === 'pt' ? 'pt-BR' : 'en'], { type: 'region' });
+    country.querySelectorAll('option').forEach((option) => {
+      option.textContent = `${option.dataset.flag} ${names.of(option.value) ?? option.value} +${option.dataset.code}`;
+    });
+    if (phoneLib) syncPhonePlaceholder();
+    else phone.placeholder = phone.placeholder.replace(/^(Ex\.:|E\.g\.:)/, text.example);
+    if (!phoneError.hidden) phoneCheck();
+    if (!linkedinError.hidden) linkedinCheck();
+  };
+
+  const params = new URLSearchParams(location.search);
+  const preset = KIND_ALIASES[params.get('type') ?? params.get('tipo') ?? ''];
+  const radio = preset && form.querySelector<HTMLInputElement>(`input[name="kind"][value="${preset}"]`);
+  if (radio) radio.checked = true;
+  syncLanguage();
+  syncRole();
+
+  form.addEventListener('change', (event) => {
+    if ((event.target as HTMLInputElement).name === 'kind') syncLanguage();
+  });
+  new MutationObserver(syncLanguage).observe(root, { attributes: true, attributeFilter: ['data-lang'] });
+
+  // Links on the same page (e.g. /links) pick the option and scroll to the form.
+  document.querySelectorAll<HTMLAnchorElement>('a[data-kind]').forEach((link) => {
+    link.addEventListener('click', (event) => {
+      const option = form.querySelector<HTMLInputElement>(`input[name="kind"][value="${link.dataset.kind}"]`);
+      if (!option) return;
+      event.preventDefault();
+      option.checked = true;
+      syncLanguage();
+      document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // Umami custom events (the script only loads when PUBLIC_UMAMI_WEBSITE_ID is set).
+  const track = (event: string, data: Record<string, string | number>) =>
+    (window as { umami?: { track: (e: string, d: object) => void } }).umami?.track(event, data);
+
+  // --- Partial saves ------------------------------------------------------------------------
+  const snapshot = () => {
+    const data = new FormData(form);
+    const value = (name: string) => String(data.get(name) ?? '');
+    return {
+      leadId: stored.leadId,
+      kind: value('kind'),
+      name: value('name'),
+      email: value('email'),
+      whatsapp: value('whatsapp'),
+      phoneCountry: value('phoneCountry'),
+      role: value('role'),
+      roleOther: value('roleOther'),
+      company: value('company'),
+      revenue: value('revenue'),
+      linkedin: value('linkedin'),
+      message: value('message'),
+      website: value('website'),
+      lang: lang(),
+      origin,
+      page: location.pathname,
+    };
+  };
+  const hasContact = (s: ReturnType<typeof snapshot>) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.email.trim()) || s.whatsapp.replace(/\D/g, '').length >= 8;
+
+  // Saves run one at a time; the submit waits for the last one.
+  let saving: Promise<void> = Promise.resolve();
+  let lastSaved = '';
+  let completed = false;
+  const savePartial = () => {
+    saving = saving.then(async () => {
+      const current = snapshot();
+      const key = JSON.stringify(current);
+      if (completed || !hasContact(current) || key === lastSaved) return;
+      try {
+        const res = await fetch('/api/lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...current, stage: 'partial', ref: stored.ref, startedAt }),
+          keepalive: true,
+        });
+        if (!res.ok) return;
+        if (!lastSaved) track('form-contato-parcial', { tipo: current.kind, lang: current.lang });
+        lastSaved = key;
+        const body = await res.json().catch(() => ({}));
+        if (body.ref?.taskId) {
+          stored = { ...stored, ref: body.ref };
+          persist();
+        }
+      } catch {}
+    });
+    return saving;
+  };
+
+  let idle: number | undefined;
+  form.addEventListener('input', () => {
+    clearTimeout(idle);
+    idle = window.setTimeout(savePartial, 2000);
+  });
+  form.addEventListener('change', () => {
+    clearTimeout(idle);
+    savePartial();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') savePartial();
+  });
+
+  // --- Submit -------------------------------------------------------------------------------
+  const showError = (text: string) => {
+    status.textContent = text;
+    status.classList.add('is-error');
+  };
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    status.textContent = '';
+    status.classList.remove('is-error');
+    const text = t();
+
+    linkedinCheck();
+    if (phone.value.trim()) await phoneCheck();
+    roleOther.setCustomValidity(roleOther.required && !roleOther.value.trim() ? text.roleOtherRequired : '');
+
+    const invalid = Array.from(form.querySelectorAll<HTMLInputElement>('input, select, textarea')).find(
+      (el) => !el.hidden && !el.checkValidity()
+    );
+    if (invalid) {
+      showError(invalid.validity.customError ? invalid.validationMessage : text.required);
+      invalid.focus();
+      return;
+    }
+
+    clearTimeout(idle);
+    submit.disabled = true;
+    status.textContent = text.sending;
+    await saving;
+    const payload = {
+      ...snapshot(),
+      stage: 'complete',
+      ref: stored.ref,
+      startedAt,
+    };
+    try {
+      const res = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok) {
+        completed = true;
+        try {
+          sessionStorage.removeItem(LEAD_KEY);
+        } catch {}
+        track('form-contato-enviado', { tipo: String(payload.kind), lang: lang() });
+        const firstName = String(payload.name ?? '').trim().split(/\s+/)[0];
+        done.querySelectorAll('[data-first-name]').forEach((el) => (el.textContent = firstName));
+        form.hidden = true;
+        done.hidden = false;
+        done.focus();
+        return;
+      }
+      track('form-contato-erro', { tipo: String(payload.kind), status: res.status });
+      // Server validation messages are written in Portuguese.
+      if (res.status === 400) showError(lang() === 'pt' && body.error ? body.error : text.invalid);
+      else showError(text.failed);
+    } catch {
+      showError(text.offline);
+    }
+    submit.disabled = false;
+  });
+</script>

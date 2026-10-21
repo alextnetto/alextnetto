@@ -72,6 +72,18 @@ const umamiWebsiteId = import.meta.env.PUBLIC_UMAMI_WEBSITE_ID;
       document.documentElement.setAttribute('data-theme', theme);
     </script>
 
+    <!-- First touch of the visit (utm_source or external referrer), sent with the contact form -->
+    <script is:inline>
+      try {
+        if (!sessionStorage.getItem('first-touch')) {
+          const utm = new URLSearchParams(location.search).get('utm_source');
+          const ref = document.referrer ? new URL(document.referrer) : null;
+          const source = utm || (ref && ref.host !== location.host ? ref.host : '') || 'direto';
+          sessionStorage.setItem('first-touch', source + ' → ' + location.pathname);
+        }
+      } catch {}
+    </script>
+
     <!-- Analytics: only counts visits on alexnet.to, not previews or localhost -->
     {umamiWebsiteId && (
       <script is:inline defer src="https://cloud.umami.is/script.js" data-website-id={umamiWebsiteId} data-domains="alexnet.to"></script>

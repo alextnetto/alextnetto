@@ -1,8 +1,11 @@
 ---
 // Link-in-bio page for the Instagram bio. Not in the menu or the sitemap, and noindex.
-// Each link sends an Umami event "links-<id>" with the page language.
+// Each link sends an Umami event "links-<id>" with the page language. The three contact links
+// scroll to the form below with the option preselected; leads land in the Trama funnel alexnet.to.
 import Base from '../layouts/Base.astro';
 import LangSwitch from '../components/LangSwitch.astro';
+import ContactForm from '../components/ContactForm.astro';
+import type { LeadKind } from '../lib/lead';
 
 const langs = ['pt', 'en'] as const;
 type Lang = (typeof langs)[number];
@@ -12,19 +15,26 @@ const intro: Record<Lang, string> = {
   en: 'AI applied to business. Founder of blockful, building Fator.',
 };
 
-const links: { id: string; href: (lang: Lang) => string; external?: boolean; title: Record<Lang, string>; note?: Record<Lang, string> }[] = [
+const formIntro: Record<Lang, string> = {
+  pt: 'Quer conversar? Deixe seu contato aqui e eu respondo.',
+  en: 'Want to talk? Leave your details here and I will reply.',
+};
+
+const links: { id: string; href: (lang: Lang) => string; kind?: LeadKind; external?: boolean; title: Record<Lang, string>; note?: Record<Lang, string> }[] = [
   {
     id: 'palestra',
-    href: (lang) => `/contact?type=talk&lang=${lang}`,
+    href: () => '#contato',
+    kind: 'palestra',
     title: { pt: 'Contratar uma palestra', en: 'Book a talk' },
     note: {
-      pt: 'Service-as-Software, riscos de IA e o que aprendi no Vale do Silício.',
-      en: 'Service-as-Software, AI risks and what I learned in Silicon Valley.',
+      pt: 'Temas sugeridos: Service-as-Software, riscos de IA e Vale do Silício. Adapto ao seu público.',
+      en: 'Suggested topics: Service-as-Software, AI risks and Silicon Valley. Adapted to your audience.',
     },
   },
   {
     id: 'advisor',
-    href: (lang) => `/contact?type=advisor&lang=${lang}`,
+    href: () => '#contato',
+    kind: 'advisor',
     title: { pt: 'Advisor em tecnologia e IA', en: 'Advisor in technology and AI' },
     note: {
       pt: 'Para founders e executivos decidindo onde usar IA.',
@@ -33,7 +43,8 @@ const links: { id: string; href: (lang: Lang) => string; external?: boolean; tit
   },
   {
     id: 'empresa',
-    href: (lang) => `/contact?type=company&lang=${lang}`,
+    href: () => '#contato',
+    kind: 'empresa',
     title: { pt: 'IA na sua empresa', en: 'AI in your company' },
     note: {
       pt: 'Agentes de IA funcionando nos sistemas que o seu time já usa.',
@@ -92,6 +103,7 @@ const links: { id: string; href: (lang: Lang) => string; external?: boolean; tit
               href={link.href(lang)}
               data-umami-event={`links-${link.id}`}
               data-umami-event-lang={lang}
+              data-kind={link.kind}
               {...(link.external ? { rel: 'noopener noreferrer' } : {})}
             >
               <span class="link-title">{link.title[lang]}</span>
@@ -100,6 +112,9 @@ const links: { id: string; href: (lang: Lang) => string; external?: boolean; tit
           </li>
         ))}
       </ul>
+      <p class="talks-intro">{formIntro[lang]}</p>
     </div>
   ))}
+
+  <ContactForm />
 </Base>
