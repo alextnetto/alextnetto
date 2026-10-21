@@ -1,0 +1,6 @@
+---
+// Bilingual text: global.css shows the span that matches <html data-lang>.
+const { pt, en } = Astro.props as { pt: string; en: string };
+---
+
+<span data-lang-block="pt">{pt}</span><span data-lang-block="en">{en}</span>

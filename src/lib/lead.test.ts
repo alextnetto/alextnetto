@@ -13,8 +13,12 @@ const completeBody = {
   kind: 'empresa',
   name: '  Maria Souza ',
   whatsapp: '(48) 99972-4312',
+  phoneCountry: 'BR',
   email: 'Maria@Empresa.com.br',
   company: 'Distribuidora Sul',
+  role: 'ceo',
+  revenue: '10m_50m',
+  linkedin: 'linkedin.com/in/maria-souza?utm_source=share',
   message: 'O comercial gasta 3 horas por dia montando propostas.',
   lang: 'pt',
   origin: 'instagram',
@@ -32,6 +36,9 @@ const lead: Lead = {
   whatsapp: '+5548999724312',
   email: 'maria@empresa.com.br',
   company: 'Distribuidora Sul',
+  role: 'ceo',
+  revenue: '10m_50m',
+  linkedin: 'https://www.linkedin.com/in/maria-souza',
   message: 'Evento para 200 gestores em março.',
   lang: 'pt',
   origin: 'instagram',
@@ -86,6 +93,9 @@ describe('parseLead', () => {
         whatsapp: '+5548999724312',
         email: 'maria@empresa.com.br',
         company: 'Distribuidora Sul',
+        role: 'ceo',
+        revenue: '10m_50m',
+        linkedin: 'https://www.linkedin.com/in/maria-souza',
         message: 'O comercial gasta 3 horas por dia montando propostas.',
         lang: 'pt',
         origin: 'instagram',
@@ -106,10 +116,52 @@ describe('parseLead', () => {
     ['whatsapp', { whatsapp: '9999' }],
     ['email', { email: 'nope' }],
     ['company', { company: '' }],
+    ['company that is only a LinkedIn link', { company: 'linkedin.com/in/maria', linkedin: '' }],
+    ['role', { role: 'rei' }],
+    ['missing role', { role: '' }],
+    ['Other role without a description', { role: 'outro', roleOther: ' ' }],
+    ['revenue', { revenue: '1bi' }],
+    ['missing revenue', { revenue: '' }],
+    ['LinkedIn', { linkedin: 'facebook.com/maria' }],
     ['message', { message: 'oi' }],
     ['consent', { consent: false }],
   ])('rejects a complete submission with a bad %s', (_field, patch) => {
     expect(parseLead({ ...completeBody, ...patch }, NOW).status).toBe('invalid');
+  });
+
+  it('reads the number with the country the person chose', () => {
+    const result = parseLead({ ...completeBody, whatsapp: '213-373-4253', phoneCountry: 'US' }, NOW);
+    expect(result.status === 'ok' && result.lead.whatsapp).toBe('+12133734253');
+  });
+
+  it('says why a number is refused', () => {
+    const result = parseLead({ ...completeBody, whatsapp: '48 9997-4312' }, NOW);
+    expect(result.status === 'invalid' && result.error).toMatch(/9 dígitos/);
+  });
+
+  it('keeps the role typed under Other, and only then', () => {
+    const other = parseLead({ ...completeBody, role: 'outro', roleOther: ' Head de Inovação ' }, NOW);
+    expect(other.status === 'ok' && other.lead).toMatchObject({ role: 'outro', roleOther: 'Head de Inovação' });
+    const ceo = parseLead({ ...completeBody, roleOther: 'Head de Inovação' }, NOW);
+    expect(ceo.status === 'ok' && ceo.lead.roleOther).toBeUndefined();
+  });
+
+  it('keeps valid extras on a partial save and drops a bad LinkedIn link', () => {
+    const result = parseLead(
+      { leadId: LEAD_ID, stage: 'partial', kind: 'advisor', email: 'ana@x.com', role: 'ceo', linkedin: 'facebook.com/ana' },
+      NOW
+    );
+    expect(result.status === 'ok' && result.lead).toMatchObject({ role: 'ceo' });
+    expect(result.status === 'ok' && result.lead.linkedin).toBeUndefined();
+  });
+
+  it('moves a LinkedIn link typed in the company field to the LinkedIn field on a partial save', () => {
+    const result = parseLead(
+      { leadId: LEAD_ID, stage: 'partial', kind: 'advisor', email: 'ana@x.com', company: 'www.linkedin.com/in/ana-lima/' },
+      NOW
+    );
+    expect(result.status === 'ok' && result.lead).toMatchObject({ linkedin: 'https://www.linkedin.com/in/ana-lima' });
+    expect(result.status === 'ok' && result.lead.company).toBeUndefined();
   });
 
   it('keeps the country code of a number typed with +', () => {
@@ -180,6 +232,9 @@ describe('saveToTrama', () => {
         email: 'maria@empresa.com.br',
         whatsapp: '+5548999724312',
         empresa: 'Distribuidora Sul',
+        cargo: 'ceo',
+        faturamento: '10m_50m',
+        linkedin: 'https://www.linkedin.com/in/maria-souza',
         origem: 'instagram',
         pagina: '/contact',
         idioma: 'pt',
@@ -188,6 +243,17 @@ describe('saveToTrama', () => {
     });
     expect(body.description).toContain('Evento para 200 gestores em março.');
     expect(body.description).toContain('Maria Souza');
+    expect(body.description).toContain('CEO ou presidente');
+    expect(body.description).toContain('R$ 10 a 50 milhões');
+  });
+
+  it('writes the role typed under Other in the description', async () => {
+    const { calls, fetchFn } = fakeFetch({ [`POST ${TASKS}`]: () => ({ json: task() }) });
+
+    await saveToTrama({ ...lead, role: 'outro', roleOther: 'Head de Inovação' }, env, fetchFn);
+
+    expect(calls[0].body.customFields.cargo).toBe('outro');
+    expect(calls[0].body.description).toContain('Outro: Head de Inovação');
   });
 
   it('creates a partial lead in "Formulário incompleto", named by the number', async () => {
@@ -258,13 +324,12 @@ describe('saveToTrama', () => {
     expect(calls.some((c) => c.method === 'PATCH')).toBe(false);
   });
 
-  it('titles the card with the person name when the company field is a LinkedIn URL', async () => {
+  it('titles the card with the person name when there is no company', async () => {
     const { calls, fetchFn } = fakeFetch({ [`POST ${TASKS}`]: () => ({ json: task() }) });
 
-    await saveToTrama({ ...lead, company: 'linkedin.com/in/maria' }, env, fetchFn);
+    await saveToTrama({ ...lead, company: undefined }, env, fetchFn);
 
     expect(calls[0].body.title).toBe('Maria Souza: Palestra');
-    expect(calls[0].body.customFields.empresa).toBe('linkedin.com/in/maria');
   });
 
   it('fails clearly without an API key', async () => {
@@ -285,9 +350,12 @@ describe('saveToSheet', () => {
       stage: 'Completo',
       kind: 'Palestra',
       name: 'Maria Souza',
+      role: 'CEO ou presidente',
       email: 'maria@empresa.com.br',
       whatsapp: '+5548999724312',
       company: 'Distribuidora Sul',
+      revenue: 'R$ 10 a 50 milhões',
+      linkedin: 'https://www.linkedin.com/in/maria-souza',
       message: 'Evento para 200 gestores em março.',
       lang: 'pt',
       origin: 'instagram',

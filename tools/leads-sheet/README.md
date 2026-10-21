@@ -8,7 +8,7 @@ The sheet belongs to alex.netto@fator.ai (id `1FE8Pugf3nn4wKGUbpTXs09b3_4i5SQA30
 
 ## Columns
 
-Lead ID, Criado em, Atualizado em, Formulário (Parcial or Completo), Interesse, Nome, E-mail, WhatsApp, Empresa, evento ou LinkedIn, Mensagem, Idioma, Origem, Página, Trama (link to the card).
+Lead ID, Criado em, Atualizado em, Formulário (Parcial or Completo), Interesse, Nome, Cargo, E-mail, WhatsApp, Empresa ou evento, Faturamento, LinkedIn, Mensagem, Idioma, Origem, Página, Trama (link to the card).
 
 ## Deploy
 

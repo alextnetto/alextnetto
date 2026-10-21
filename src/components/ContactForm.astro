@@ -1,7 +1,11 @@
 ---
 // Contact form shared by /contact and /links. Saves partial leads (see src/lib/lead.ts),
 // records the page it sits on, and lets links with data-kind preselect an option.
+// Phone numbers use the same library as Trama (src/lib/phone.ts), loaded only when needed.
 import type { LeadKind } from '../lib/lead';
+import Bi from './Bi.astro';
+import { REVENUE_BANDS, ROLES } from '../lib/leadOptions';
+import { phoneCountries, phoneExample } from '../lib/phone';
 
 const langs = ['pt', 'en'] as const;
 type Lang = (typeof langs)[number];
@@ -12,12 +16,19 @@ const kinds: { kind: LeadKind; label: Record<Lang, string> }[] = [
   { kind: 'empresa', label: { pt: 'IA na minha empresa', en: 'AI in my company' } },
 ];
 
+const countries = phoneCountries('pt');
+const brExample = phoneExample('BR');
+
 const fields = {
   legend: { pt: 'O que você procura', en: 'What are you looking for' },
   name: { pt: 'Nome', en: 'Name' },
   email: { pt: 'E-mail', en: 'Email' },
-  whatsapp: { pt: 'WhatsApp com DDD', en: 'WhatsApp, with country code' },
-  company: { pt: 'Empresa, evento ou LinkedIn', en: 'Company, event or LinkedIn' },
+  whatsapp: { pt: 'WhatsApp', en: 'WhatsApp' },
+  role: { pt: 'Cargo', en: 'Role' },
+  company: { pt: 'Empresa ou evento', en: 'Company or event' },
+  revenue: { pt: 'Faturamento anual da empresa', en: 'Company annual revenue' },
+  linkedin: { pt: 'LinkedIn', en: 'LinkedIn' },
+  optional: { pt: '(opcional)', en: '(optional)' },
   message: { pt: 'Conte em poucas linhas', en: 'Tell me in a few lines' },
   consent: {
     pt: 'Concordo que meus dados fiquem no CRM que eu e meu time usamos, só para responder a este pedido.',
@@ -34,50 +45,85 @@ const fields = {
     en: 'I will read your message. If there is a fit, I or someone on my team will reply by WhatsApp or email.',
   },
 } as const;
+
 ---
 
 <div id="contato">
   <form class="contact-form" id="contact-form" novalidate>
-    <p class="form-note">{langs.map((lang) => <span data-lang-block={lang}>{fields.saved[lang]}</span>)}</p>
+    <p class="form-note"><Bi {...fields.saved} /></p>
 
     <fieldset>
-      <legend>{langs.map((lang) => <span data-lang-block={lang}>{fields.legend[lang]}</span>)}</legend>
+      <legend><Bi {...fields.legend} /></legend>
       <div class="kind-options">
-        {kinds.map(({ kind, label }) => (
+        {kinds.map(({ kind, label: text }) => (
           <label>
             <input type="radio" name="kind" value={kind} required checked={kind === 'advisor'} />
-            <span>{langs.map((lang) => <span data-lang-block={lang}>{label[lang]}</span>)}</span>
+            <span>{langs.map((lang) => <span data-lang-block={lang}>{text[lang]}</span>)}</span>
           </label>
         ))}
       </div>
     </fieldset>
 
     <div class="field-row">
-      <label class="field">
-        <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.name[lang]}</span>)}</span>
-        <input name="name" autocomplete="name" required maxlength="120" />
-      </label>
-      <label class="field">
-        <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.email[lang]}</span>)}</span>
-        <input name="email" type="email" autocomplete="email" required maxlength="200" />
-      </label>
+      <div class="field">
+        <label class="field-label" for="cf-name"><Bi {...fields.name} /></label>
+        <input id="cf-name" name="name" autocomplete="name" required maxlength="120" placeholder="Ex.: Maria Souza" />
+      </div>
+      <div class="field">
+        <label class="field-label" for="cf-email"><Bi {...fields.email} /></label>
+        <input id="cf-email" name="email" type="email" autocomplete="email" required maxlength="200" placeholder="voce@empresa.com.br" aria-describedby="cf-email-hint" />
+        <p class="field-hint" id="cf-email-hint" hidden></p>
+      </div>
     </div>
 
     <div class="field-row">
-      <label class="field">
-        <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.whatsapp[lang]}</span>)}</span>
-        <input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" required maxlength="40" />
-      </label>
-      <label class="field">
-        <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.company[lang]}</span>)}</span>
-        <input name="company" autocomplete="organization" required maxlength="200" />
-      </label>
+      <div class="field">
+        <label class="field-label" for="cf-whatsapp"><Bi {...fields.whatsapp} /></label>
+        <div class="phone-row">
+          <select name="phoneCountry" class="phone-country" aria-label="País do número / Number country" autocomplete="tel-country-code">
+            {countries.map(({ country, name, code, flag }) => (
+              <option value={country} data-flag={flag} data-code={code} selected={country === 'BR'}>{flag} {name} +{code}</option>
+            ))}
+          </select>
+          <input id="cf-whatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel-national" required maxlength="40" placeholder={`Ex.: ${brExample}`} aria-describedby="cf-whatsapp-error" />
+        </div>
+        <p class="field-error" id="cf-whatsapp-error" hidden></p>
+      </div>
+      <div class="field">
+        <label class="field-label" for="cf-role"><Bi {...fields.role} /></label>
+        <select id="cf-role" name="role" required>
+          <option value="" disabled selected data-pt="Selecione" data-en="Select">Selecione</option>
+          {ROLES.map((role) => <option value={role.id} data-pt={role.pt} data-en={role.en}>{role.pt}</option>)}
+        </select>
+        <input name="roleOther" class="role-other" maxlength="80" aria-label="Qual é o seu cargo? / What is your role?" placeholder="Ex.: Head de inovação" hidden />
+      </div>
     </div>
 
-    <label class="field">
-      <span class="field-label">{langs.map((lang) => <span data-lang-block={lang}>{fields.message[lang]}</span>)}</span>
-      <textarea name="message" rows="4" required maxlength="2000"></textarea>
-    </label>
+    <div class="field-row">
+      <div class="field">
+        <label class="field-label" for="cf-company"><Bi {...fields.company} /></label>
+        <input id="cf-company" name="company" autocomplete="organization" required maxlength="200" placeholder="Ex.: Distribuidora Sul ou Congresso X" aria-describedby="cf-company-hint" />
+        <p class="field-hint" id="cf-company-hint" hidden></p>
+      </div>
+      <div class="field">
+        <label class="field-label" for="cf-revenue"><Bi {...fields.revenue} /></label>
+        <select id="cf-revenue" name="revenue" required>
+          <option value="" disabled selected data-pt="Selecione" data-en="Select">Selecione</option>
+          {REVENUE_BANDS.map((band) => <option value={band.id} data-pt={band.pt} data-en={band.en}>{band.pt}</option>)}
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="cf-linkedin"><Bi {...fields.linkedin} /> <span class="field-optional"><Bi {...fields.optional} /></span></label>
+      <input id="cf-linkedin" name="linkedin" inputmode="url" autocomplete="url" maxlength="300" placeholder="linkedin.com/in/seu-nome" aria-describedby="cf-linkedin-error" />
+      <p class="field-error" id="cf-linkedin-error" hidden></p>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="cf-message"><Bi {...fields.message} /></label>
+      <textarea id="cf-message" name="message" rows="4" required maxlength="2000"></textarea>
+    </div>
 
     <label class="hp" aria-hidden="true">
       Website <input name="website" tabindex="-1" autocomplete="off" />
@@ -85,13 +131,11 @@ const fields = {
 
     <label class="consent">
       <input type="checkbox" name="consent" required />
-      <span>{langs.map((lang) => <span data-lang-block={lang}>{fields.consent[lang]}</span>)}</span>
+      <span><Bi {...fields.consent} /></span>
     </label>
 
     <div class="form-foot">
-      <button class="form-submit" type="submit">
-        {langs.map((lang) => <span data-lang-block={lang}>{fields.send[lang]}</span>)}
-      </button>
+      <button class="form-submit" type="submit"><Bi {...fields.send} /></button>
       <p class="form-status" role="status" aria-live="polite"></p>
     </div>
   </form>
@@ -107,9 +151,15 @@ const fields = {
 </div>
 
 <script>
+  import { looksLikeLinkedin, normalizeLinkedin, suggestEmail } from '../lib/contact';
+
   type Lang = 'pt' | 'en';
 
-  const PLACEHOLDERS: Record<Lang, Record<string, string>> = {
+  // The phone metadata is large: fetched on the first interaction with the number or country.
+  let phoneLib: Promise<typeof import('../lib/phone')> | undefined;
+  const loadPhone = () => (phoneLib ??= import('../lib/phone'));
+
+  const MESSAGE_PLACEHOLDERS: Record<Lang, Record<string, string>> = {
     pt: {
       palestra: 'Ex.: evento para 200 gestores de varejo em São Paulo, em março, 40 minutos.',
       advisor: 'Ex.: sou CEO de uma distribuidora e quero alguém de tecnologia ao meu lado para decidir onde usar IA.',
@@ -122,15 +172,36 @@ const fields = {
     },
   };
 
-  const MESSAGES: Record<Lang, Record<string, string>> = {
+  const TEXT = {
     pt: {
+      name: 'Ex.: Maria Souza',
+      email: 'voce@empresa.com.br',
+      company: 'Ex.: Distribuidora Sul ou Congresso X',
+      roleOther: 'Ex.: Head de inovação',
+      linkedin: 'linkedin.com/in/seu-nome',
+      example: 'Ex.:',
+      didYouMean: 'Você quis dizer',
+      linkedinError: 'Confira o link. Exemplo: linkedin.com/in/seu-nome',
+      linkedinMoved: 'Passei o link para o campo LinkedIn. Aqui vai o nome da empresa ou do evento.',
+      roleOtherRequired: 'Conte qual é o seu cargo.',
       required: 'Preencha os campos obrigatórios.',
       consent: 'Para enviar, marque a caixa de consentimento.',
       sending: 'Enviando…',
       failed: 'Não consegui enviar agora. Tente de novo em alguns minutos ou me chame no Telegram (@alextnetto).',
       offline: 'Sem conexão. Tente de novo em alguns minutos ou me chame no Telegram (@alextnetto).',
+      invalid: 'Confira os campos e tente de novo.',
     },
     en: {
+      name: 'E.g.: Maria Souza',
+      email: 'you@company.com',
+      company: 'E.g.: Acme Inc. or Event X',
+      roleOther: 'E.g.: Head of innovation',
+      linkedin: 'linkedin.com/in/your-name',
+      example: 'E.g.:',
+      didYouMean: 'Did you mean',
+      linkedinError: 'Check the link. Example: linkedin.com/in/your-name',
+      linkedinMoved: 'I moved the link to the LinkedIn field. Put the company or event name here.',
+      roleOtherRequired: 'Tell me your role.',
       required: 'Please fill in the required fields.',
       consent: 'To send, please tick the consent box.',
       sending: 'Sending…',
@@ -138,7 +209,7 @@ const fields = {
       offline: 'No connection. Try again in a few minutes or reach me on Telegram (@alextnetto).',
       invalid: 'Please check the fields and try again.',
     },
-  };
+  } as const;
 
   // ?type= (English) and ?tipo= (Portuguese) both preselect the option.
   const KIND_ALIASES: Record<string, string> = {
@@ -155,8 +226,30 @@ const fields = {
   const done = document.querySelector<HTMLElement>('#form-done')!;
   const status = form.querySelector<HTMLElement>('.form-status')!;
   const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]')!;
-  const message = form.querySelector<HTMLTextAreaElement>('textarea[name="message"]')!;
+  const field = <T extends HTMLElement>(name: string) => form.elements.namedItem(name) as unknown as T;
+  const nameInput = field<HTMLInputElement>('name');
+  const email = field<HTMLInputElement>('email');
+  const emailHint = form.querySelector<HTMLElement>('#cf-email-hint')!;
+  const phone = field<HTMLInputElement>('whatsapp');
+  const country = field<HTMLSelectElement>('phoneCountry');
+  const phoneError = form.querySelector<HTMLElement>('#cf-whatsapp-error')!;
+  const role = field<HTMLSelectElement>('role');
+  const roleOther = field<HTMLInputElement>('roleOther');
+  const company = field<HTMLInputElement>('company');
+  const companyHint = form.querySelector<HTMLElement>('#cf-company-hint')!;
+  const revenue = field<HTMLSelectElement>('revenue');
+  const linkedin = field<HTMLInputElement>('linkedin');
+  const linkedinError = form.querySelector<HTMLElement>('#cf-linkedin-error')!;
+  const message = field<HTMLTextAreaElement>('message');
   const startedAt = Date.now();
+
+  const lang = (): Lang => (root.dataset.lang === 'en' ? 'en' : 'pt');
+  const t = () => TEXT[lang()];
+
+  const show = (el: HTMLElement, text?: string) => {
+    el.textContent = text ?? '';
+    el.hidden = !text;
+  };
 
   // One lead per visit: partial saves and the final submission share this id, and the
   // ref the server returns, so Trama keeps one card and the sheet one row.
@@ -185,21 +278,140 @@ const fields = {
     }
   })();
 
-  const lang = (): Lang => (root.dataset.lang === 'en' ? 'en' : 'pt');
+  // --- Phone: country picker + number, checked with Trama's library -------------------
+  const region = (() => {
+    try {
+      const code = new Intl.Locale(navigator.language).maximize().region;
+      return code && country.querySelector(`option[value="${code}"]`) ? code : undefined;
+    } catch {
+      return undefined;
+    }
+  })();
+  const phoneCheck = async () => {
+    const { formatPhone, normalizePhone, phoneCountry, phoneProblem } = await loadPhone();
+    const raw = phone.value.trim();
+    const detected = phoneCountry(raw);
+    if (detected) country.value = detected;
+    else if (raw && !normalizePhone(raw, country.value)) {
+      // Brazil is the default; a number that only fits the browser's country (or Brazil) moves the picker.
+      const fallback = [region, 'BR'].find((code) => code && code !== country.value && normalizePhone(raw, code));
+      if (fallback) country.value = fallback;
+    }
+    const problem = raw ? phoneProblem(raw, country.value, lang()) : undefined;
+    if (!problem && raw) phone.value = formatPhone(raw, country.value) ?? raw;
+    phone.setCustomValidity(problem ?? '');
+    show(phoneError, problem);
+    return !problem;
+  };
+  const syncPhonePlaceholder = async () => {
+    const { phoneExample } = await loadPhone();
+    const example = phoneExample(country.value);
+    phone.placeholder = example ? `${t().example} ${example}` : '';
+  };
+
+  phone.addEventListener('focus', () => void loadPhone(), { once: true });
+  phone.addEventListener('input', () => {
+    show(phoneError);
+    phone.setCustomValidity('');
+    // A number typed with + (or pasted from wa.me) picks its own country.
+    if (/^\s*(\+|00|.*wa\.me|.*phone=)/i.test(phone.value)) {
+      loadPhone().then(({ phoneCountry }) => {
+        const detected = phoneCountry(phone.value);
+        if (detected && detected !== country.value) country.value = detected;
+      });
+    }
+  });
+  phone.addEventListener('blur', () => void phoneCheck());
+  country.addEventListener('change', () => {
+    syncPhonePlaceholder();
+    if (phone.value.trim()) phoneCheck();
+  });
+
+  // --- E-mail typos, LinkedIn links, company field, role "Other" ------------------------
+  email.addEventListener('blur', () => {
+    const suggestion = suggestEmail(email.value);
+    emailHint.replaceChildren();
+    emailHint.hidden = !suggestion;
+    if (!suggestion) return;
+    const apply = document.createElement('button');
+    apply.type = 'button';
+    apply.textContent = suggestion;
+    apply.addEventListener('click', () => {
+      email.value = suggestion;
+      emailHint.hidden = true;
+      email.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    emailHint.append(`${t().didYouMean} `, apply, '?');
+  });
+
+  const linkedinCheck = () => {
+    const raw = linkedin.value.trim();
+    const normalized = raw ? normalizeLinkedin(raw) : null;
+    if (normalized) linkedin.value = normalized;
+    const problem = raw && !normalized ? t().linkedinError : undefined;
+    linkedin.setCustomValidity(problem ?? '');
+    show(linkedinError, problem);
+  };
+  linkedin.addEventListener('blur', linkedinCheck);
+  linkedin.addEventListener('input', () => {
+    linkedin.setCustomValidity('');
+    show(linkedinError);
+  });
+
+  company.addEventListener('blur', () => {
+    if (!looksLikeLinkedin(company.value)) return show(companyHint);
+    if (!linkedin.value.trim()) linkedin.value = company.value.trim();
+    company.value = '';
+    linkedinCheck();
+    show(companyHint, t().linkedinMoved);
+  });
+
+  const syncRole = () => {
+    const other = role.value === 'outro';
+    roleOther.hidden = !other;
+    roleOther.required = other;
+    if (!other) roleOther.value = '';
+  };
+  role.addEventListener('change', () => {
+    syncRole();
+    if (role.value === 'outro') roleOther.focus();
+  });
+
+  // --- Kind, language and placeholders ----------------------------------------------------
   const currentKind = () => form.querySelector<HTMLInputElement>('input[name="kind"]:checked')?.value ?? 'advisor';
-  const syncPlaceholder = () => {
-    message.placeholder = PLACEHOLDERS[lang()][currentKind()] ?? '';
+  const syncLanguage = () => {
+    const l = lang();
+    const text = t();
+    message.placeholder = MESSAGE_PLACEHOLDERS[l][currentKind()] ?? '';
+    nameInput.placeholder = text.name;
+    email.placeholder = text.email;
+    company.placeholder = text.company;
+    roleOther.placeholder = text.roleOther;
+    linkedin.placeholder = text.linkedin;
+    form.querySelectorAll<HTMLOptionElement>('option[data-pt]').forEach((option) => {
+      option.textContent = option.dataset[l] ?? option.textContent;
+    });
+    const names = new Intl.DisplayNames([l === 'pt' ? 'pt-BR' : 'en'], { type: 'region' });
+    country.querySelectorAll('option').forEach((option) => {
+      option.textContent = `${option.dataset.flag} ${names.of(option.value) ?? option.value} +${option.dataset.code}`;
+    });
+    if (phoneLib) syncPhonePlaceholder();
+    else phone.placeholder = phone.placeholder.replace(/^(Ex\.:|E\.g\.:)/, text.example);
+    if (!phoneError.hidden) phoneCheck();
+    if (!linkedinError.hidden) linkedinCheck();
   };
 
   const params = new URLSearchParams(location.search);
   const preset = KIND_ALIASES[params.get('type') ?? params.get('tipo') ?? ''];
   const radio = preset && form.querySelector<HTMLInputElement>(`input[name="kind"][value="${preset}"]`);
   if (radio) radio.checked = true;
-  syncPlaceholder();
+  syncLanguage();
+  syncRole();
 
   form.addEventListener('change', (event) => {
-    if ((event.target as HTMLInputElement).name === 'kind') syncPlaceholder();
+    if ((event.target as HTMLInputElement).name === 'kind') syncLanguage();
   });
+  new MutationObserver(syncLanguage).observe(root, { attributes: true, attributeFilter: ['data-lang'] });
 
   // Links on the same page (e.g. /links) pick the option and scroll to the form.
   document.querySelectorAll<HTMLAnchorElement>('a[data-kind]').forEach((link) => {
@@ -208,34 +420,40 @@ const fields = {
       if (!option) return;
       event.preventDefault();
       option.checked = true;
-      syncPlaceholder();
+      syncLanguage();
       document.getElementById('contato')?.scrollIntoView({ behavior: 'smooth' });
     });
   });
-  new MutationObserver(syncPlaceholder).observe(root, { attributes: true, attributeFilter: ['data-lang'] });
 
   // Umami custom events (the script only loads when PUBLIC_UMAMI_WEBSITE_ID is set).
   const track = (event: string, data: Record<string, string | number>) =>
     (window as { umami?: { track: (e: string, d: object) => void } }).umami?.track(event, data);
 
+  // --- Partial saves ------------------------------------------------------------------------
   const snapshot = () => {
     const data = new FormData(form);
+    const value = (name: string) => String(data.get(name) ?? '');
     return {
       leadId: stored.leadId,
-      kind: String(data.get('kind') ?? ''),
-      name: String(data.get('name') ?? ''),
-      email: String(data.get('email') ?? ''),
-      whatsapp: String(data.get('whatsapp') ?? ''),
-      company: String(data.get('company') ?? ''),
-      message: String(data.get('message') ?? ''),
-      website: String(data.get('website') ?? ''),
+      kind: value('kind'),
+      name: value('name'),
+      email: value('email'),
+      whatsapp: value('whatsapp'),
+      phoneCountry: value('phoneCountry'),
+      role: value('role'),
+      roleOther: value('roleOther'),
+      company: value('company'),
+      revenue: value('revenue'),
+      linkedin: value('linkedin'),
+      message: value('message'),
+      website: value('website'),
       lang: lang(),
       origin,
       page: location.pathname,
     };
   };
   const hasContact = (s: ReturnType<typeof snapshot>) =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.email.trim()) || s.whatsapp.replace(/\D/g, '').length >= 10;
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.email.trim()) || s.whatsapp.replace(/\D/g, '').length >= 8;
 
   // Saves run one at a time; the submit waits for the last one.
   let saving: Promise<void> = Promise.resolve();
@@ -279,6 +497,7 @@ const fields = {
     if (document.visibilityState === 'hidden') savePartial();
   });
 
+  // --- Submit -------------------------------------------------------------------------------
   const showError = (text: string) => {
     status.textContent = text;
     status.classList.add('is-error');
@@ -288,20 +507,24 @@ const fields = {
     event.preventDefault();
     status.textContent = '';
     status.classList.remove('is-error');
-    const m = MESSAGES[lang()];
+    const text = t();
 
-    const invalid = Array.from(form.querySelectorAll<HTMLInputElement>('input, textarea')).find(
-      (el) => !el.checkValidity()
+    linkedinCheck();
+    if (phone.value.trim()) await phoneCheck();
+    roleOther.setCustomValidity(roleOther.required && !roleOther.value.trim() ? text.roleOtherRequired : '');
+
+    const invalid = Array.from(form.querySelectorAll<HTMLInputElement>('input, select, textarea')).find(
+      (el) => !el.hidden && !el.checkValidity()
     );
     if (invalid) {
-      showError(invalid.type === 'checkbox' ? m.consent : m.required);
+      showError(invalid.type === 'checkbox' ? text.consent : invalid.validity.customError ? invalid.validationMessage : text.required);
       invalid.focus();
       return;
     }
 
     clearTimeout(idle);
     submit.disabled = true;
-    status.textContent = m.sending;
+    status.textContent = text.sending;
     await saving;
     const payload = {
       ...snapshot(),
@@ -332,10 +555,10 @@ const fields = {
       }
       track('form-contato-erro', { tipo: String(payload.kind), status: res.status });
       // Server validation messages are written in Portuguese.
-      if (res.status === 400) showError(lang() === 'pt' && body.error ? body.error : m.invalid ?? m.required);
-      else showError(m.failed);
+      if (res.status === 400) showError(lang() === 'pt' && body.error ? body.error : text.invalid);
+      else showError(text.failed);
     } catch {
-      showError(m.offline);
+      showError(text.offline);
     }
     submit.disabled = false;
   });

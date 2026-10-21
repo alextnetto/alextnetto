@@ -15,8 +15,8 @@
 
 const SHEET_NAME = 'Leads';
 const COLUMNS = [
-  'leadId', 'createdAt', 'updatedAt', 'stage', 'kind', 'name', 'email',
-  'whatsapp', 'company', 'message', 'lang', 'origin', 'page', 'trama',
+  'leadId', 'createdAt', 'updatedAt', 'stage', 'kind', 'name', 'role', 'email', 'whatsapp',
+  'company', 'revenue', 'linkedin', 'message', 'lang', 'origin', 'page', 'trama',
 ];
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

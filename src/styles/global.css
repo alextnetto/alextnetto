@@ -613,6 +613,7 @@ html[data-lang="en"] .lang-switch [data-set-lang="en"] {
 }
 
 .field input,
+.field select,
 .field textarea {
   width: 100%;
   font: inherit;
@@ -631,14 +632,66 @@ html[data-lang="en"] .lang-switch [data-set-lang="en"] {
 }
 
 .field input:focus,
+.field select:focus,
 .field textarea:focus {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 1px var(--accent);
 }
 
+.field input::placeholder,
 .field textarea::placeholder {
   color: var(--text-muted);
+}
+
+.phone-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.phone-row .phone-country {
+  flex: 0 1 auto;
+  max-width: 45%;
+  min-width: 0;
+}
+
+.phone-row input {
+  flex: 1;
+  min-width: 0;
+}
+
+.role-other {
+  margin-top: 0.4rem;
+}
+
+.field-optional {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.field-error,
+.field-hint {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.field-error {
+  color: var(--error);
+}
+
+.field-hint {
+  color: var(--text-secondary);
+}
+
+.field-hint button {
+  font: inherit;
+  color: var(--accent);
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .consent {

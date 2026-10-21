@@ -7,6 +7,10 @@
  * call takes an injected `fetch` so the flow is testable without the real CRM.
  */
 
+import { looksLikeLinkedin, normalizeLinkedin } from './contact';
+import { REVENUE_BANDS, ROLES, revenueLabel, roleLabel, type RevenueId, type RoleId } from './leadOptions';
+import { normalizePhone, phoneProblem } from './phone';
+
 export const LEAD_KINDS = ['palestra', 'advisor', 'empresa'] as const;
 export type LeadKind = (typeof LEAD_KINDS)[number];
 
@@ -45,11 +49,17 @@ export interface Lead {
   stage: LeadStage;
   kind: LeadKind;
   name?: string;
-  /** E.164, e.g. +5548999724312 */
+  /** E.164, e.g. +5548999724312, read with the country the person picked. */
   whatsapp?: string;
   email?: string;
-  /** Company, event or LinkedIn URL, as typed. */
+  /** Company or event name. */
   company?: string;
+  role?: RoleId;
+  /** What the person typed when the role is "outro". */
+  roleOther?: string;
+  revenue?: RevenueId;
+  /** Canonical LinkedIn URL (see normalizeLinkedin). */
+  linkedin?: string;
   message?: string;
   lang?: 'pt' | 'en';
   /** First touch of the visit (utm_source or referrer, plus landing path). */
@@ -73,7 +83,8 @@ export interface LeadEnv {
 
 const MIN_FILL_MS = 3_000;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// One @, no spaces, a dotted domain ending in letters.
+const EMAIL = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)*\.[a-z]{2,}$/i;
 
 const text = (value: unknown, max: number) => (typeof value === 'string' ? value.trim().slice(0, max) : '');
 
@@ -82,15 +93,6 @@ function compact<T extends Record<string, unknown>>(record: T): Partial<T> {
   return Object.fromEntries(
     Object.entries(record).filter(([, value]) => value !== undefined && value !== null && value !== '')
   ) as Partial<T>;
-}
-
-function normalizeWhatsapp(raw: string): string | null {
-  const digits = raw.replace(/\D/g, '');
-  // A leading + means the country code is already there (the form is also in English).
-  if (raw.startsWith('+')) return digits.length >= 8 && digits.length <= 15 ? `+${digits}` : null;
-  if (digits.length === 10 || digits.length === 11) return `+55${digits}`;
-  if (digits.length >= 12 && digits.length <= 15) return `+${digits}`;
-  return null;
 }
 
 function parseRef(value: unknown): TramaRef | undefined {
@@ -117,18 +119,34 @@ export function parseLead(body: unknown, now = Date.now()): ParseResult {
   const kind = text(b.kind, 20) as LeadKind;
   if (!LEAD_KINDS.includes(kind)) return invalid('Escolha o que você procura.');
 
-  const name = text(b.name, 120);
-  const whatsapp = normalizeWhatsapp(text(b.whatsapp, 40));
+  const name = text(b.name, 120).replace(/\s+/g, ' ');
+  const typedPhone = text(b.whatsapp, 80);
+  const phoneCountry = text(b.phoneCountry, 2).toUpperCase() || 'BR';
+  const whatsapp = normalizePhone(typedPhone, phoneCountry);
   const typedEmail = text(b.email, 200).toLowerCase();
   const email = EMAIL.test(typedEmail) ? typedEmail : null;
-  const company = text(b.company, 200);
+  let company = text(b.company, 200);
+  let typedLinkedin = text(b.linkedin, 300);
+  // A LinkedIn link pasted in the company field belongs in the LinkedIn field.
+  if (looksLikeLinkedin(company)) {
+    if (!typedLinkedin) typedLinkedin = company;
+    company = '';
+  }
+  const linkedin = normalizeLinkedin(typedLinkedin);
+  const role = ROLES.find((option) => option.id === text(b.role, 30))?.id;
+  const roleOther = role === 'outro' ? text(b.roleOther, 80) : '';
+  const revenue = REVENUE_BANDS.find((band) => band.id === text(b.revenue, 30))?.id;
   const message = text(b.message, 2000);
 
   if (stage === 'complete') {
     if (name.length < 2) return invalid('Informe seu nome.');
-    if (!whatsapp) return invalid('Informe um WhatsApp com DDD.');
     if (!email) return invalid('Informe um e-mail válido.');
-    if (company.length < 2) return invalid('Informe a empresa, o evento ou o seu LinkedIn.');
+    if (!whatsapp) return invalid(phoneProblem(typedPhone, phoneCountry, 'pt') ?? 'Informe um WhatsApp com DDD.');
+    if (!role) return invalid('Escolha o seu cargo.');
+    if (role === 'outro' && roleOther.length < 2) return invalid('Conte qual é o seu cargo.');
+    if (company.length < 2) return invalid('Informe o nome da empresa ou do evento.');
+    if (!revenue) return invalid('Escolha a faixa de faturamento (ou "Prefiro não informar").');
+    if (typedLinkedin && !linkedin) return invalid('Confira o link do LinkedIn, por exemplo linkedin.com/in/seu-nome.');
     if (message.length < 5) return invalid('Conte em poucas linhas o que você precisa.');
     if (b.consent !== true) return invalid('Para enviar, marque a caixa de consentimento.');
   } else if (!whatsapp && !email) {
@@ -143,6 +161,10 @@ export function parseLead(body: unknown, now = Date.now()): ParseResult {
     whatsapp,
     email,
     company,
+    role,
+    roleOther,
+    revenue,
+    linkedin,
     message,
     lang: b.lang === 'pt' || b.lang === 'en' ? b.lang : undefined,
     origin: text(b.origin, 300),
@@ -152,16 +174,19 @@ export function parseLead(body: unknown, now = Date.now()): ParseResult {
   return { status: 'ok', lead };
 }
 
-const isLinkedin = (value?: string) => !!value && /linkedin\.com\//i.test(value);
+const roleText = (lead: Lead) => (lead.role === 'outro' && lead.roleOther ? `Outro: ${lead.roleOther}` : roleLabel(lead.role));
 
 /** Card description: everything the person wrote, in reading order. */
 function describe(lead: Lead): string {
   const lines: [string, string | undefined][] = [
     ['Procura', KIND_LABEL[lead.kind]],
     ['Nome', lead.name],
+    ['Cargo', roleText(lead)],
     ['WhatsApp', lead.whatsapp],
     ['E-mail', lead.email],
-    ['Empresa, evento ou LinkedIn', lead.company],
+    ['Empresa ou evento', lead.company],
+    ['Faturamento anual', revenueLabel(lead.revenue)],
+    ['LinkedIn', lead.linkedin],
   ];
   return [
     ...lines.filter(([, value]) => value).map(([key, value]) => `**${key}:** ${value}`),
@@ -213,7 +238,7 @@ export async function saveToTrama(
   const stillPartial = existing?.statusId === TRAMA.status.partial;
   if (existing && lead.stage === 'partial' && !stillPartial) return result(existing);
 
-  const who = lead.company && !isLinkedin(lead.company) ? lead.company : lead.name || lead.email || lead.whatsapp;
+  const who = lead.company || lead.name || lead.email || lead.whatsapp;
   const fields = {
     title: `${who}: ${KIND_LABEL[lead.kind]}`.slice(0, 500),
     description: describe(lead),
@@ -222,6 +247,9 @@ export async function saveToTrama(
       email: lead.email,
       whatsapp: lead.whatsapp,
       empresa: lead.company,
+      cargo: lead.role,
+      faturamento: lead.revenue,
+      linkedin: lead.linkedin,
       origem: lead.origin,
       pagina: lead.page,
       idioma: lead.lang,
@@ -258,9 +286,12 @@ export async function saveToSheet(
       stage: STAGE_LABEL[lead.stage],
       kind: KIND_LABEL[lead.kind],
       name: lead.name,
+      role: roleText(lead),
       email: lead.email,
       whatsapp: lead.whatsapp,
       company: lead.company,
+      revenue: revenueLabel(lead.revenue),
+      linkedin: lead.linkedin,
       message: lead.message,
       lang: lead.lang,
       origin: lead.origin,
