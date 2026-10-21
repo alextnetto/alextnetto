@@ -326,12 +326,15 @@ abbr[title] {
   color: var(--text-secondary);
   margin-bottom: 0;
   font-style: italic;
+  text-wrap: balance;
 }
 
+/* Same 2rem above the hero as above each section rule below it (it collapses with the header's margin). */
 .hero {
   display: grid;
   gap: 1.25rem;
   align-items: center;
+  margin-top: 2rem;
 }
 
 .hero-photos {
@@ -925,6 +928,7 @@ html[data-lang="en"] .lang-switch [data-set-lang="en"] {
 
   .hero {
     grid-template-columns: 1fr 240px;
+    column-gap: 2rem;
   }
 
   .hero-photos {
