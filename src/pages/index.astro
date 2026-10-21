@@ -1,17 +1,26 @@
 ---
 import Base from '../layouts/Base.astro';
+import Bi from '../components/Bi.astro';
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
+
+const postDate = (date: Date, locale: string) =>
+  date.toLocaleDateString(locale, { year: 'numeric', month: 'short', day: 'numeric' });
 ---
 
 <Base>
   <div class="hero">
     <div class="hero-text">
       <h1>Alex Netto</h1>
-      <p class="tagline">Working at the intersection of game theory, economy, and bytes.</p>
+      <p class="tagline">
+        <Bi
+          en="Working at the intersection of game theory, economy, and bytes."
+          pt="Trabalhando na interseção entre teoria dos jogos, economia e bytes."
+        />
+      </p>
     </div>
     <!-- Crossfades every 6 s in CSS; reduced motion shows the first photo only. -->
     <div class="hero-photos">
@@ -25,189 +34,232 @@ const posts = (await getCollection('blog')).sort(
   </div>
 
   <section class="section">
-    <h2>About</h2>
-    <p>
-      Born in Germany, raised in Brazil. Coding since 14 and working as a software engineer since 2019: 7+ years spanning fintech infrastructure, security, AI agents, and product leadership. I founded and run <strong>blockful</strong>, a security and infrastructure company with a senior team of 10, and I am building <strong>Fator</strong>, which puts AI agents to work inside Brazilian companies. Invited speaker at Stanford twice. Former competitive basketball player, now training for an Ironman; sports taught me discipline and high agency. I speak Portuguese, English, Spanish, and German.
-    </p>
-    <p>
-      <a href="https://ncase.me/trust/">Optimism</a>, courage, and integrity are my core values.
-    </p>
+    <h2><Bi en="About" pt="Sobre" /></h2>
+    <div data-lang-block="en">
+      <p>
+        Born in Germany, raised in Brazil. Coding since 14 and working as a software engineer since 2019: 7+ years spanning fintech infrastructure, security, AI agents, and product leadership. I founded and run <strong>blockful</strong>, a security and infrastructure company with a senior team of 10, and I am building <strong>Fator</strong>, which puts AI agents to work inside Brazilian companies. Invited speaker at Stanford twice. Former competitive basketball player, now training for an Ironman; sports taught me discipline and high agency. I speak Portuguese, English, Spanish, and German.
+      </p>
+      <p>
+        <a href="https://ncase.me/trust/">Optimism</a>, courage, and integrity are my core values.
+      </p>
+    </div>
+    <div data-lang-block="pt" lang="pt-BR">
+      <p>
+        Nasci na Alemanha e cresci no Brasil. Programo desde os 14 anos e trabalho como engenheiro de software desde 2019: são mais de 7 anos entre infraestrutura financeira, segurança, agentes de IA e liderança de produto. Fundei e comando a <strong>blockful</strong>, empresa de segurança e infraestrutura com um time sênior de 10 pessoas, e estou construindo a <strong>Fator</strong>, que coloca agentes de IA para trabalhar dentro de empresas brasileiras. Palestrante convidado em Stanford duas vezes. Joguei basquete competitivo e hoje treino para um Ironman; o esporte me ensinou disciplina e alta agência. Falo português, inglês, espanhol e alemão.
+      </p>
+      <p>
+        <a href="https://ncase.me/trust/">Otimismo</a>, coragem e integridade são os meus valores.
+      </p>
+    </div>
   </section>
 
   <section class="section">
-    <h2>Now</h2>
-    <ul>
+    <h2><Bi en="Now" pt="Agora" /></h2>
+    <ul data-lang-block="en">
       <li>Building <strong>Fator</strong>: AI agents working inside Brazilian companies</li>
       <li>CEO & Founder at <strong>blockful</strong>: security and infrastructure</li>
       <li>ENS Delegate and Security Council member</li>
       <li>Researching mechanism design, governance, and public goods funding</li>
     </ul>
-  </section>
-
-  <section class="section">
-    <h2>Work with me</h2>
-    <ul>
-      <li><strong>Talks</strong> in English or Portuguese. Suggested topics: Service-as-Software, AI risks and what I learned in Silicon Valley, adapted to the needs and interests of your audience. <a href="/talks">See the talks</a>.</li>
-      <li><strong>Advisor in technology and AI</strong> for founders and executives deciding where to start with AI, what to buy and what to build.</li>
-      <li><strong>AI in your company</strong>: my team and I put AI agents to work in the systems your team already uses.</li>
+    <ul data-lang-block="pt" lang="pt-BR">
+      <li>Construindo a <strong>Fator</strong>: agentes de IA trabalhando dentro de empresas brasileiras</li>
+      <li>CEO e fundador da <strong>blockful</strong>: segurança e infraestrutura</li>
+      <li>Delegado da ENS e membro do Security Council</li>
+      <li>Pesquisando desenho de mecanismos, governança e financiamento de bens públicos</li>
     </ul>
-    <p><a href="/contact">Get in touch through the contact form</a>.</p>
   </section>
 
   <section class="section">
-    <h2>Experience</h2>
+    <h2><Bi en="Work with me" pt="Trabalhe comigo" /></h2>
+    <div data-lang-block="en">
+      <ul>
+        <li><strong>Talks</strong> in English or Portuguese. Suggested topics: Service-as-Software, AI risks and what I learned in Silicon Valley, adapted to the needs and interests of your audience. <a href="/talks">See the talks</a>.</li>
+        <li><strong>Advisor in technology and AI</strong> for founders and executives deciding where to start with AI, what to buy and what to build.</li>
+        <li><strong>AI in your company</strong>: my team and I put AI agents to work in the systems your team already uses.</li>
+      </ul>
+      <p><a href="/contact">Get in touch through the contact form</a>.</p>
+    </div>
+    <div data-lang-block="pt" lang="pt-BR">
+      <ul>
+        <li><strong>Palestras</strong> em português ou inglês. Temas sugeridos: Service-as-Software, riscos de IA e o que aprendi no Vale do Silício, adaptados à necessidade e ao interesse do seu público. <a href="/talks">Ver as palestras</a>.</li>
+        <li><strong>Advisor em tecnologia e IA</strong> para founders e executivos decidindo por onde começar com IA, o que comprar e o que construir.</li>
+        <li><strong>IA na sua empresa</strong>: eu e meu time colocamos agentes de IA para trabalhar nos sistemas que a sua equipe já usa.</li>
+      </ul>
+      <p><a href="/contact">Fale comigo pelo formulário de contato</a>.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2><Bi en="Experience" pt="Experiência" /></h2>
 
     <div class="project-item">
-      <strong>CEO & Founder, blockful</strong>
-      <p>Founded a security and infrastructure company. Grew to 18 people, strategically consolidated to a senior team of 10. Directly sold $5M+ in services and software solutions. Three engagements with Brazil's Central Bank on CBDC programs. Organized event at B3 (Brazilian Stock Exchange) with DREX leadership. Co-designed a BRL-backed stablecoin architecture with Chainlink, Stark Bank, and Genial Investimentos. In 2026 we started Fator inside blockful, moving from security to putting AI agents to work in Brazilian companies.</p>
+      <strong><Bi en="CEO & Founder, blockful" pt="CEO e fundador, blockful" /></strong>
+      <p data-lang-block="en">Founded a security and infrastructure company. Grew to 18 people, strategically consolidated to a senior team of 10. Directly sold $5M+ in services and software solutions. Three engagements with Brazil's Central Bank on CBDC programs. Organized event at B3 (Brazilian Stock Exchange) with DREX leadership. Co-designed a BRL-backed stablecoin architecture with Chainlink, Stark Bank, and Genial Investimentos. In 2026 we started Fator inside blockful, moving from security to putting AI agents to work in Brazilian companies.</p>
+      <p data-lang-block="pt" lang="pt-BR">Fundei uma empresa de segurança e infraestrutura. Crescemos até 18 pessoas e, por estratégia, consolidamos um time sênior de 10. Vendi diretamente mais de US$ 5 milhões em serviços e soluções de software. Três projetos com o Banco Central do Brasil em programas de CBDC. Organizei um evento na B3 com a liderança do DREX. Desenhei, com Chainlink, Stark Bank e Genial Investimentos, a arquitetura de uma stablecoin lastreada em real. Em 2026 começamos a Fator dentro da blockful, saindo da segurança para colocar agentes de IA para trabalhar em empresas brasileiras.</p>
     </div>
 
     <div class="project-item">
       <strong>CTO, Ayla</strong>
-      <p>Led a team of 4 at a real estate startup. Built proptech tools that drove a 70% increase in company revenue. Full ownership of technical strategy, product architecture, and delivery.</p>
+      <p data-lang-block="en">Led a team of 4 at a real estate startup. Built proptech tools that drove a 70% increase in company revenue. Full ownership of technical strategy, product architecture, and delivery.</p>
+      <p data-lang-block="pt" lang="pt-BR">Liderei um time de 4 pessoas em uma startup do mercado imobiliário. Construí ferramentas de proptech que levaram a um aumento de 70% na receita da empresa. Responsável por toda a estratégia técnica, a arquitetura do produto e a entrega.</p>
     </div>
 
     <div class="project-item">
-      <strong>Senior Backend Engineer, Bava</strong>
-      <p>Built backend systems for a B2B financial services platform.</p>
+      <strong><Bi en="Senior Backend Engineer, Bava" pt="Engenheiro backend sênior, Bava" /></strong>
+      <p><Bi en="Built backend systems for a B2B financial services platform." pt="Construí sistemas de backend para uma plataforma B2B de serviços financeiros." /></p>
     </div>
 
     <div class="project-item">
-      <strong>Full-Stack Engineer, TecBan</strong>
-      <p>Developed solutions for one of Brazil's largest financial infrastructure providers, which operates the Banco24Horas ATM network serving 150M+ transactions/year.</p>
+      <strong><Bi en="Full-Stack Engineer, TecBan" pt="Engenheiro full-stack, TecBan" /></strong>
+      <p data-lang-block="en">Developed solutions for one of Brazil's largest financial infrastructure providers, which operates the Banco24Horas ATM network serving 150M+ transactions/year.</p>
+      <p data-lang-block="pt" lang="pt-BR">Desenvolvi soluções para uma das maiores empresas de infraestrutura financeira do Brasil, que opera a rede de caixas eletrônicos Banco24Horas, com mais de 150 milhões de transações por ano.</p>
     </div>
   </section>
 
   <section class="section">
-    <h2>Open Source & Contributions</h2>
+    <h2><Bi en="Open Source & Contributions" pt="Open source e contribuições" /></h2>
 
     <div class="achievement-group">
-      <h3>Projects</h3>
+      <h3><Bi en="Projects" pt="Projetos" /></h3>
 
       <div class="project-item">
         <strong><a href="https://github.com/alextnetto/res">RES</a></strong>
-        <p>Agent skill that reverse engineers a SaaS product through the browser into a build kit: screens, business rules with evidence, data model, design tokens and launch barriers, without touching production data. Includes public studies of ClickUp and Pipedrive.</p>
+        <p data-lang-block="en">Agent skill that reverse engineers a SaaS product through the browser into a build kit: screens, business rules with evidence, data model, design tokens and launch barriers, without touching production data. Includes public studies of ClickUp and Pipedrive.</p>
+        <p data-lang-block="pt" lang="pt-BR">Skill para agentes que estuda um produto SaaS pelo navegador e entrega um kit para reconstruí-lo: telas, regras de negócio com evidência, modelo de dados, design tokens e barreiras de lançamento, sem tocar em dados de produção. Inclui estudos públicos do ClickUp e do Pipedrive.</p>
       </div>
 
       <div class="project-item">
         <strong><a href="https://github.com/blockful/anticapture">anticapture</a></strong>
-        <p>Governance monitoring platform. Built Arkham address enrichment, voting infrastructure, activity feeds, and per-DAO event thresholds.</p>
+        <p data-lang-block="en">Governance monitoring platform. Built Arkham address enrichment, voting infrastructure, activity feeds, and per-DAO event thresholds.</p>
+        <p data-lang-block="pt" lang="pt-BR">Plataforma de monitoramento de governança. Construí o enriquecimento de endereços com a Arkham, a infraestrutura de votação, os feeds de atividade e os limites de eventos por DAO.</p>
       </div>
 
       <div class="project-item">
         <strong><a href="https://github.com/blockful/dao-proposals">dao-proposals</a></strong>
-        <p>ENS governance proposal review framework. Calldata decoding, verification, and security analysis for on-chain proposals to the ENS DAO.</p>
+        <p data-lang-block="en">ENS governance proposal review framework. Calldata decoding, verification, and security analysis for on-chain proposals to the ENS DAO.</p>
+        <p data-lang-block="pt" lang="pt-BR">Framework de revisão de propostas de governança da ENS. Decodificação de calldata, verificação e análise de segurança das propostas on-chain para a ENS DAO.</p>
       </div>
 
       <div class="project-item">
         <strong><a href="https://github.com/alextnetto/deadman-switch-safe">deadman-switch-safe</a></strong>
-        <p>Dead man's switch module for Gnosis Safe: automatic asset recovery if the owner becomes inactive.</p>
+        <p><Bi en="Dead man's switch module for Gnosis Safe: automatic asset recovery if the owner becomes inactive." pt="Módulo de dead man's switch para a Gnosis Safe: recuperação automática dos ativos se o dono ficar inativo." /></p>
       </div>
 
       <div class="project-item">
         <strong><a href="https://github.com/alextnetto/vaultr">vaultr</a></strong>
-        <p>Secure personal data sharing with expiring links.</p>
+        <p><Bi en="Secure personal data sharing with expiring links." pt="Compartilhamento seguro de dados pessoais com links que expiram." /></p>
       </div>
 
     </div>
 
     <div class="achievement-group">
-      <h3>Contributions</h3>
+      <h3><Bi en="Contributions" pt="Contribuições" /></h3>
 
       <div class="project-item">
-        <strong><a href="https://paragraph.com/@blockful/a-hidden-threat-to-ens-uncovering-and-solving-a-major-governanc">ENS governance vulnerability</a></strong>
-        <p>Discovered and responsibly disclosed a vulnerability that could have enabled a ~$150M attack on ENS DAO governance.</p>
+        <strong><a href="https://paragraph.com/@blockful/a-hidden-threat-to-ens-uncovering-and-solving-a-major-governanc"><Bi en="ENS governance vulnerability" pt="Vulnerabilidade na governança da ENS" /></a></strong>
+        <p><Bi en="Discovered and responsibly disclosed a vulnerability that could have enabled a ~$150M attack on ENS DAO governance." pt="Descobri e reportei de forma responsável uma vulnerabilidade que poderia ter permitido um ataque de cerca de US$ 150 milhões à governança da ENS DAO." /></p>
       </div>
 
       <div class="project-item">
         <strong><a href="https://eips.ethereum.org/EIPS/eip-7884">ERC-7884: Operation Router</a></strong>
-        <p>Co-authored Ethereum standard enabling smart contracts to redirect write operations to L2 chains, L1, or off-chain databases.</p>
+        <p><Bi en="Co-authored Ethereum standard enabling smart contracts to redirect write operations to L2 chains, L1, or off-chain databases." pt="Coautor do padrão Ethereum que permite a smart contracts redirecionar operações de escrita para L2s, para a L1 ou para bancos de dados off-chain." /></p>
       </div>
 
       <div class="project-item">
         <strong><a href="https://github.com/metagov/daostar/blob/main/DAOIPs/daoip-6.md">DAOIP-6</a></strong>
-        <p>Co-authored a DAO interoperability standard for grant program reporting via Metagov/DAOstar.</p>
+        <p><Bi en="Co-authored a DAO interoperability standard for grant program reporting via Metagov/DAOstar." pt="Coautor de um padrão de interoperabilidade de DAOs para relatórios de programas de grants, via Metagov/DAOstar." /></p>
       </div>
 
       <div class="project-item">
         <strong><a href="https://github.com/safe-global/safe-wallet-monorepo/pull/7124">Safe&#123;Wallet&#125;</a></strong>
-        <p>Added ENS name resolution to account list items. Merged into the main Safe smart account wallet.</p>
+        <p><Bi en="Added ENS name resolution to account list items. Merged into the main Safe smart account wallet." pt="Adicionei a resolução de nomes ENS aos itens da lista de contas. Incorporado à carteira principal de smart accounts da Safe." /></p>
       </div>
 
       <div class="project-item">
         <strong><a href="https://github.com/steipete/gogcli/pull/263">gogcli</a></strong>
-        <p>Added <code>docs comments</code> subcommand for managing Google Doc comments to this Google Suite CLI tool.</p>
+        <p data-lang-block="en">Added <code>docs comments</code> subcommand for managing Google Doc comments to this Google Suite CLI tool.</p>
+        <p data-lang-block="pt" lang="pt-BR">Adicionei o subcomando <code>docs comments</code>, que gerencia comentários de Google Docs, a esta CLI do Google Workspace.</p>
       </div>
 
     </div>
   </section>
 
   <section class="section">
-    <h2>Speaking & Teaching</h2>
+    <h2><Bi en="Speaking & Teaching" pt="Palestras e ensino" /></h2>
     <ul>
-      <li><strong><a href="https://www.youtube.com/watch?v=RyEVflEF_qY">Stanford University</a></strong>: invited speaker on security research (2025 and 2026)</li>
-      <li>ETH Denver 2023, SmartCon 2023: bootcamp instructor</li>
-      <li>Federal University of Paraná: blockchain fundamentals bootcamp</li>
-      <li>ENS Workshop at ETH Samba</li>
-      <li>Speaker at conferences across Brazil, US (Denver, SF, NYC), Switzerland, Turkey, and Spain</li>
-      <li>Talks at companies from the US to Latin America</li>
+      <li><strong><a href="https://www.youtube.com/watch?v=RyEVflEF_qY"><Bi en="Stanford University" pt="Universidade Stanford" /></a></strong>: <Bi en="invited speaker on security research (2025 and 2026)" pt="palestrante convidado sobre pesquisa de segurança (2025 e 2026)" /></li>
+      <li>ETH Denver 2023, SmartCon 2023: <Bi en="bootcamp instructor" pt="instrutor de bootcamp" /></li>
+      <li><Bi en="Federal University of Paraná: blockchain fundamentals bootcamp" pt="Universidade Federal do Paraná: bootcamp de fundamentos de blockchain" /></li>
+      <li><Bi en="ENS Workshop at ETH Samba" pt="Workshop da ENS no ETH Samba" /></li>
+      <li><Bi en="Speaker at conferences across Brazil, US (Denver, SF, NYC), Switzerland, Turkey, and Spain" pt="Palestrante em conferências no Brasil, nos EUA (Denver, SF, NYC), na Suíça, na Turquia e na Espanha" /></li>
+      <li><Bi en="Talks at companies from the US to Latin America" pt="Palestras em empresas dos EUA à América Latina" /></li>
     </ul>
   </section>
 
   <section class="section">
-    <h2>Awards</h2>
+    <h2><Bi en="Awards" pt="Prêmios" /></h2>
 
     <div class="achievement-group">
-      <h3>Academic</h3>
+      <h3><Bi en="Academic" pt="Acadêmicos" /></h3>
       <ul>
-        <li>State Math Olympiad: gold medal</li>
-        <li>Brazilian National Math Olympiad: silver medal</li>
+        <li><Bi en="State Math Olympiad: gold medal" pt="Olimpíada Estadual de Matemática: medalha de ouro" /></li>
+        <li><Bi en="Brazilian National Math Olympiad: silver medal" pt="Olimpíada Brasileira de Matemática: medalha de prata" /></li>
       </ul>
     </div>
 
     <div class="achievement-group">
-      <h3>Hackathons: 15+ prizes in 50+ competitions</h3>
+      <h3><Bi en="Hackathons: 15+ prizes in 50+ competitions" pt="Hackathons: mais de 15 prêmios em mais de 50 competições" /></h3>
       <ul>
-        <li>ETH Belgrade 2024: 1st place, largest prize</li>
-        <li>ETHGlobal Brussels: Uniswap + Pancakeswap prizes</li>
-        <li>SmartCon 2023: 1st place, Chainlink Functions</li>
-        <li>ETH Rio 2023: 2 categories, AI delegates</li>
-        <li>ETHGlobal NYC: 2 category prizes</li>
-        <li>ETH Samba 2023: 3 category prizes</li>
-        <li>ETH São Paulo 2022: grand prize</li>
-        <li>ETH Rio 2022: 1st place, DeFi</li>
-        <li>NASA SpaceApps: 1st place</li>
-        <li>AutTech Hackathon: 1st place</li>
+        <li>ETH Belgrade 2024: <Bi en="1st place, largest prize" pt="1º lugar, maior prêmio" /></li>
+        <li>ETHGlobal Brussels: <Bi en="Uniswap + Pancakeswap prizes" pt="prêmios da Uniswap e da Pancakeswap" /></li>
+        <li>SmartCon 2023: <Bi en="1st place, Chainlink Functions" pt="1º lugar, Chainlink Functions" /></li>
+        <li>ETH Rio 2023: <Bi en="2 categories, AI delegates" pt="2 categorias, delegados de IA" /></li>
+        <li>ETHGlobal NYC: <Bi en="2 category prizes" pt="prêmios em 2 categorias" /></li>
+        <li>ETH Samba 2023: <Bi en="3 category prizes" pt="prêmios em 3 categorias" /></li>
+        <li>ETH São Paulo 2022: <Bi en="grand prize" pt="grande prêmio" /></li>
+        <li>ETH Rio 2022: <Bi en="1st place, DeFi" pt="1º lugar, DeFi" /></li>
+        <li>NASA SpaceApps: <Bi en="1st place" pt="1º lugar" /></li>
+        <li>AutTech Hackathon: <Bi en="1st place" pt="1º lugar" /></li>
       </ul>
     </div>
   </section>
 
   <section class="section">
-    <h2>Community</h2>
-    <ul>
+    <h2><Bi en="Community" pt="Comunidade" /></h2>
+    <ul data-lang-block="en">
       <li>Organized <strong>ETHFloripa</strong>, <strong>ZuFloripa</strong>, and frENS hour @ Devconnect 2023</li>
       <li>Event at B3 headquarters with Brazil's CBDC director</li>
       <li>Kernel Fellow, Chainlink Developer Expert, Zuzalian</li>
       <li>ENS & Chainlink meetup @ ETH Belgrade</li>
       <li>My team organized Brazil's first OpenClaw meetup</li>
     </ul>
+    <ul data-lang-block="pt" lang="pt-BR">
+      <li>Organizei o <strong>ETHFloripa</strong>, o <strong>ZuFloripa</strong> e o frENS hour no Devconnect 2023</li>
+      <li>Evento na sede da B3 com o diretor de CBDC do Banco Central</li>
+      <li>Kernel Fellow, Chainlink Developer Expert, Zuzalian</li>
+      <li>Meetup de ENS e Chainlink no ETH Belgrade</li>
+      <li>Meu time organizou o primeiro meetup de OpenClaw do Brasil</li>
+    </ul>
   </section>
 
   <section class="section">
-    <h2>Education</h2>
+    <h2><Bi en="Education" pt="Formação" /></h2>
     <p>
-      Computer Science at the Federal University of Santa Catarina (UFSC), Florianópolis, Brazil. I left after 3 years to start blockful.
+      <Bi
+        en="Computer Science at the Federal University of Santa Catarina (UFSC), Florianópolis, Brazil. I left after 3 years to start blockful."
+        pt="Ciência da Computação na Universidade Federal de Santa Catarina (UFSC), em Florianópolis. Saí depois de 3 anos para fundar a blockful."
+      />
     </p>
   </section>
 
   {posts.length > 0 && (
     <section class="section">
-      <h2>Writing</h2>
+      <h2><Bi en="Writing" pt="Textos" /></h2>
       <ul class="post-list">
         {posts.map((post) => (
           <li>
             <span class="post-list-date">
-              {post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+              <Bi en={postDate(post.data.date, 'en-US')} pt={postDate(post.data.date, 'pt-BR')} />
             </span>
             <a href={`/blog/${post.id}`} class="post-list-title">{post.data.title}</a>
           </li>

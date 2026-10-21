@@ -1,53 +1,59 @@
 ---
-// PT/EN switch for bilingual pages. Wrap the page heading in it; global.css hides
-// the [data-lang-block] that does not match <html data-lang>. The choice is kept in
-// ?lang= and in localStorage ('talks-lang', its name since /talks was the only user).
+// EN/PT switch in the header. The language itself is chosen in Base.astro (?lang=, then the
+// last choice, then English); global.css hides the [data-lang-block] that does not match
+// <html data-lang>. In Portuguese, internal links carry ?lang=pt so the choice survives
+// navigation and shared URLs.
 ---
 
-<script is:inline>
-  (() => {
-    const valid = ['pt', 'en'];
-    const param = new URLSearchParams(location.search).get('lang');
-    let stored = null;
-    try { stored = localStorage.getItem('talks-lang'); } catch {}
-    const lang = valid.includes(param) ? param
-      : valid.includes(stored) ? stored
-      : (navigator.language || '').toLowerCase().startsWith('pt') ? 'pt' : 'en';
-    document.documentElement.dataset.lang = lang;
-    document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
-  })();
-</script>
-
-<div class="talks-top">
-  <slot />
-  <div class="lang-switch" role="group" aria-label="Idioma / Language">
-    <button type="button" data-set-lang="pt" lang="pt-BR">PT</button>
-    <span aria-hidden="true">/</span>
-    <button type="button" data-set-lang="en" lang="en">EN</button>
-  </div>
+<div class="lang-switch" role="group" aria-label="Language / Idioma">
+  <button type="button" data-set-lang="en" lang="en">EN</button>
+  <span aria-hidden="true">/</span>
+  <button type="button" data-set-lang="pt" lang="pt-BR">PT</button>
 </div>
 
 <script>
   const root = document.documentElement;
   const buttons = document.querySelectorAll<HTMLButtonElement>('[data-set-lang]');
+  const current = () => (root.dataset.lang === 'pt' ? 'pt' : 'en');
 
-  const sync = () => {
-    const current = root.dataset.lang === 'en' ? 'en' : 'pt';
-    buttons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.setLang === current)));
+  const syncLinks = () => {
+    const lang = current();
+    document.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((link) => {
+      const href = link.getAttribute('href') ?? '';
+      if (href.startsWith('#')) return;
+      const url = new URL(href, location.href);
+      if (url.origin !== location.origin || url.pathname.startsWith('/api/')) return;
+      if (lang === 'pt') url.searchParams.set('lang', 'pt');
+      else url.searchParams.delete('lang');
+      link.setAttribute('href', url.pathname + url.search + url.hash);
+    });
+  };
+
+  const syncButtons = () => {
+    buttons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.setLang === current())));
   };
 
   buttons.forEach((button) => {
     button.addEventListener('click', () => {
-      const lang = button.dataset.setLang === 'en' ? 'en' : 'pt';
+      const lang = button.dataset.setLang === 'pt' ? 'pt' : 'en';
       root.dataset.lang = lang;
       root.lang = lang === 'pt' ? 'pt-BR' : 'en';
-      try { localStorage.setItem('talks-lang', lang); } catch {}
+      try { localStorage.setItem('lang', lang); } catch {}
       const url = new URL(location.href);
       url.searchParams.set('lang', lang);
-      history.replaceState(null, '', url);
-      sync();
+      history.replaceState(history.state, '', url);
+      syncLinks();
+      syncButtons();
     });
   });
 
-  sync();
+  // A remembered Portuguese choice shows in the address bar too, so a copied URL opens in Portuguese.
+  if (current() === 'pt' && !new URLSearchParams(location.search).has('lang')) {
+    const url = new URL(location.href);
+    url.searchParams.set('lang', 'pt');
+    history.replaceState(history.state, '', url);
+  }
+
+  syncLinks();
+  syncButtons();
 </script>

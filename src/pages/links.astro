@@ -3,7 +3,6 @@
 // Each link sends an Umami event "links-<id>" with the page language. The three contact links
 // scroll to the form below with the option preselected; leads land in the Trama funnel alexnet.to.
 import Base from '../layouts/Base.astro';
-import LangSwitch from '../components/LangSwitch.astro';
 import ContactForm from '../components/ContactForm.astro';
 import type { LeadKind } from '../lib/lead';
 
@@ -89,9 +88,7 @@ const links: { id: string; href: (lang: Lang) => string; kind?: LeadKind; extern
 ---
 
 <Base title="Alex Netto: links" description={intro.en} noindex>
-  <LangSwitch>
-    <h1>Alex Netto</h1>
-  </LangSwitch>
+  <h1>Alex Netto</h1>
 
   {langs.map((lang) => (
     <div data-lang-block={lang} lang={lang === 'pt' ? 'pt-BR' : 'en'}>

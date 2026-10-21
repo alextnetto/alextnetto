@@ -1,6 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import LangSwitch from '../components/LangSwitch.astro';
 import { getCollection, render } from 'astro:content';
 
 const copy = {
@@ -45,11 +44,9 @@ const sections = await Promise.all(
 ---
 
 <Base title="Talks by Alex Netto" description="Three talks I give at events and companies: Service-as-Software, two months in Silicon Valley, and the risks of AI. In Portuguese or English.">
-  <LangSwitch>
-    <h1>
-      {langs.map((lang) => <span data-lang-block={lang}>{copy[lang].heading}</span>)}
-    </h1>
-  </LangSwitch>
+  <h1>
+    {langs.map((lang) => <span data-lang-block={lang}>{copy[lang].heading}</span>)}
+  </h1>
 
   {sections.map(({ lang, items }) => (
     <div data-lang-block={lang} lang={copy[lang].htmlLang}>

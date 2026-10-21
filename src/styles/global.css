@@ -497,17 +497,10 @@ abbr[title] {
   text-decoration: none;
 }
 
-/* --- Talks Page --- */
-html[data-lang="en"] [data-lang-block="pt"],
-html:not([data-lang="en"]) [data-lang-block="en"] {
+/* --- Languages: English unless <html data-lang="pt"> (see Base.astro) --- */
+html:not([data-lang="pt"]) [data-lang-block="pt"],
+html[data-lang="pt"] [data-lang-block="en"] {
   display: none;
-}
-
-.talks-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 1rem;
 }
 
 .lang-switch {
@@ -532,8 +525,8 @@ html:not([data-lang="en"]) [data-lang-block="en"] {
   color: var(--accent);
 }
 
-html:not([data-lang="en"]) .lang-switch [data-set-lang="pt"],
-html[data-lang="en"] .lang-switch [data-set-lang="en"] {
+html:not([data-lang="pt"]) .lang-switch [data-set-lang="en"],
+html[data-lang="pt"] .lang-switch [data-set-lang="pt"] {
   color: var(--text);
   font-weight: 700;
 }
