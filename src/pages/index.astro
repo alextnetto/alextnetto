@@ -9,8 +9,16 @@ const posts = (await getCollection('blog')).sort(
 
 <Base>
   <div class="hero">
-    <h1>Alex Netto</h1>
-    <p class="tagline">Working at the intersection of game theory, economy, and bytes.</p>
+    <div class="hero-text">
+      <h1>Alex Netto</h1>
+      <p class="tagline">Working at the intersection of game theory, economy, and bytes.</p>
+    </div>
+    <!-- Crossfades every 6 s in CSS; reduced motion shows the first photo only. -->
+    <div class="hero-photos">
+      <img src="/photos/fator.webp" width="1000" height="1000" alt="Alex Netto on stage, wearing a Fator AI t-shirt" fetchpriority="high" />
+      <img src="/photos/stanford.webp" width="1000" height="1000" alt="Alex Netto speaking at the Stanford Blockchain Governance Summit" decoding="async" />
+      <img src="/photos/triathlon.webp" width="1000" height="1000" alt="Alex Netto running a triathlon" decoding="async" />
+    </div>
   </div>
 
   <section class="section">
